@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id = "canvas" style="border:1px solid #f7cd96">
+        您的浏览器不支持canvas,请升级浏览器
+    </canvas>
+</body>
+    <script>
+        //总结1
+        //cntext.arc(centerX, centerY, radius, startAngle, endAngle, anticlockwise=false)
+        //centerX:原点X轴，centerY:原点Y轴， radius:半径
+        //startAngle:开始角度  ，endAngle：结束角度  ，anticlockwise:画圆的方向，默认顺时针。true为逆时针
+        //总结2
+        //context.closePath()不仅仅是关闭当前路径，如果当前路径没有闭合，colsePath会用一条直线链接首尾
+        //从运行代码我们可以看出区别
+        //closePath()对于fill()是没有用的，fill()填充时会自动封闭路径，所以就算你不写closePath()也没有关系
+
+
+        window.onload = function () {
+            let canvas  = document.getElementById('canvas');
+            let context = canvas.getContext('2d');
+            canvas.width = 1000;
+            canvas.height = 1000;
+
+            context.lineWidth = 1;
+            context.strokeStyle ="red";
+            for(let i = 0; i<10; i++){
+                context.beginPath();
+                context.arc(50+i*100,60,30,0,2*Math.PI*(i+1)/10);
+                context.stroke()
+            }
+            for(let i = 0; i<10; i++){
+                context.beginPath();
+                context.arc(50+i*100,160,30,0,2*Math.PI*(i+1)/10);
+                context.closePath();
+                context.stroke()
+            }
+            for(let i = 0; i<10; i++){
+                context.beginPath();
+                context.arc(50+i*100,270,30,0,2*Math.PI*(i+1)/10,true);
+        
+                context.stroke()
+            }
+            for(let i = 0; i<10; i++){
+                context.beginPath();
+                context.arc(50+i*100,370,30,0,2*Math.PI*(i+1)/10,true);
+                context.closePath();
+                context.stroke()
+            }
+
+            //从下面两个例子中可看出 closePath对于fill()是没有用的，fill在填充是会自动封闭路径
+            context.fillStyle = 'red';
+            for(let i = 0; i<10; i++){
+                context.beginPath();
+                context.arc(50+i*100,470,30,0,2*Math.PI*(i+1)/10,true);
+        
+                context.fill()
+            }
+            for(let i = 0; i<10; i++){
+                context.beginPath();
+                context.arc(50+i*100,570,30,0,2*Math.PI*(i+1)/10,true);
+                context.closePath();
+                context.fill()
+            }
+        }
+    </script>
+</html>

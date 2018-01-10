@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>七巧板</title>
+    <style>
+            /* #canvas1{
+                width: 100px;
+                height:100px;
+            } */
+    </style>
+</head>
+<body>
+    <canvas id = "canvas" style="border:1px solid #f7cd96">
+        您的浏览器不支持canvas,请升级浏览器
+    </canvas>
+    <canvas id = "canvas1" style="border:1px solid #f7cd96" width="100" height="100">
+        您的浏览器不支持canvas,请升级浏览器
+    </canvas>
+</body>
+<script>
+    window.onload = function () {
+        let canvas1 = document.getElementById('canvas1');
+
+        var context1=canvas1.getContext('2d');
+
+        context1.beginPath();
+
+        context1.moveTo(20,20);
+
+        context1.lineTo(100,100);
+
+        context1.lineWidth=5;
+
+        context1.stroke();
+
+
+        let canvasW = 400;
+        let canvasH = 400;
+        let path = [
+           [{x:0,y:0},{x:canvasW,y:0},{x:canvasW/2,y:canvasH/2},{color:'#f7cd96'}],
+           [{x:0,y:0},{x:0,y:canvasW},{x:canvasW/2,y:canvasH/2},{color:'#1cf5a2'}],
+           [{x:canvasW,y:0},{x:canvasW,y:canvasH/2},{x:canvasW*3/4,y:canvasH/4},{color:'#e0f78f'}],
+           [{x:canvasW,y:canvasH/2},{x:canvasW,y:canvasH},{x:canvasW/2,y:canvasH},{color:'pink'}],
+           [{x:canvasW/2,y:canvasH/2},{x:canvasW*3/4,y:canvasH*3/4},{x:canvasW/4,y:canvasH*3/4},{color:'#a6ff00'}],
+           [{x:canvasW*3/4,y:canvasH/4},{x:canvasW,y:canvasW/2},{x:canvasW*3/4,y:canvasH*3/4},{x:canvasW/2,y:canvasH/2},{color:'#f19cdf'}],
+           [{x:canvasW/4,y:canvasH*3/4},{x:canvasW*3/4,y:canvasH*3/4},{x:canvasW/2,y:canvasH},{x:0,y:canvasH},{color:'#d1edfa'}],
+
+        ]
+
+        let canvas = document.getElementById('canvas');
+        canvas.width = canvasW;
+        canvas.height = canvasH;
+        if(canvas.getContext('2d')){
+            let context = canvas.getContext('2d')
+            for(let i =0; i<path.length; i++){
+                drawPic(context, path[i])
+            }
+        }else{
+            alert('您的浏览器不支持canvas,请升级浏览器')
+        }
+       
+    }
+    function drawPic(context,path) {
+        context.beginPath();
+        context.moveTo(path[0].x,path[0].y)
+        for(let i = 1; i<path.length-1; i++){
+            context.lineTo(path[i].x,path[i].y)
+        }
+        context.closePath();
+        context.fillStyle = path[path.length-1].color;
+        context.fill();
+
+        context.strokeStyle = '#ccc';
+        context.lineWidth = 5
+        context.stroke();
+    }
+</script>
+</html>
