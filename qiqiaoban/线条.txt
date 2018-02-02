@@ -1,0 +1,96 @@
+总结
+1：关于在style里面设置width,height 和在标签里面设置width,height的区别
+    在index.html中，我们以cnavas1作为例子，通过运行效果，我们可以看到这两种方式设置相同宽高下的效果是不同的。
+    利用style设置宽高后，图片会变形。在网上查了一波解释，我直接粘贴过来
+    
+    解释：
+    其实<canvas>有自己的默认宽高300px*150px，
+    而且在<canvas>中定义width、height跟在style中定义width和height是有所区别的，
+    <canvas>标签的width和height是绘画区域实际宽度和高度，绘制的图形都是在这个上面。
+    而style的width和height是<canvas>在浏览器中被渲染的高度和宽度。
+    如果<canvas>的width和height没指定或值不正确，就被设置成默认值{width:300px，height:150px}。
+
+2：通过七巧板的制作我们也学到了canvas的基本知识，我说说主要的几个
+
+    注意： canvas是一个基于状态的绘制。先进行状态设置，在进行设置
+    context.moveTo(x,y)
+    context.lineTo(x,y)
+    context.lineTo(x,y)
+    ...
+    通过这两个函数我们可以绘制线段，以及多边形
+
+    context.strokeStyle = "red" //设置线条的颜色
+    context.lineStyle = 5 //设置线条的宽度
+    context.stroke()//进行绘制
+
+    context.fillStyle = "red" //设置多边形填充的颜色
+    context.fill()//进行填充
+    
+
+    我们看到，七巧板里面花了七个多半形在每个图形路径绘制之前
+    canvas是一个基于状态的绘制。利用beginPath进行新的状态开始
+    加上 context.beginPath() 表示开始新的路径
+    结束路径时加上 context.closePath() 表示结束当前路径
+
+3:开始新的状态我们都用
+    context.beginPath();
+    context.moveTo(x,y);
+    context.lineTo(x1,y1);
+    其实我们也可以写成
+    context.beginPath();
+    context.lineTo(x,y);
+    context.lineTo(x1,y1);
+
+    beginPath就可以替代moveTo ,表示创建新的路径，可以用新的状态进行绘制
+
+4:context 内置函数简化我们画方形
+
+    context.rect(x,y,width,height) //矩形
+
+    context.fillRect(x,y,width,height)  //填充矩形
+    context.storkeRect(x,y,width,height) //描边矩形
+
+    //三个函数的用法如下
+    context.beginPath()     
+    context.fillStyle = '#ccc';
+    context.strokeStyle ="red"
+    context.fillRect(100,100,120,120)
+    context.strokeRect(100,100,120,120)
+    context.closePath()
+
+    context.beginPath()     
+    context.fillStyle = 'rgba(100,110,20,0.5)';
+    context.strokeStyle ="blue"
+    context.fillRect(140,140,120,120)
+    context.strokeRect(140,140,120,120)
+    context.closePath()
+
+    context.beginPath()     
+    context.fillStyle = '#ccc';
+    context.strokeStyle ="red"
+    context.rect(170,170,120,120)
+    context.fill();
+    context.stroke();
+    context.closePath()
+
+4：线条属性
+
+    context.lineStyle = "red" //设置线条颜色
+
+    context.lineCap = "butt(default)/round/square"
+    注意1：context.lineCap用于线段的起始位置和结束位置，不用于线条连接位置
+    注意2：context.lineCap和context.closePath()
+          在你画线段使用closePath()的时候，closePath()与stroke()的位置
+          不要颠倒，顺序是ctx.stroke(); ctx.closePath()
+          //此处两行不能颠倒位置，如果先闭合路径再绘制就不会有端点样式
+
+    context.lineJoin = 'miter(default)尖角/round圆角/bevel平切,斜接'; //线条相交的样子 
+    context.lineJoin = 'miter' 是，可能尖角很长很大。这时候线条相交的地方就会出现bevel的样子
+    context.miterLimit = 40 设置他可以解决， 系统默认值是10，有时候10比较小，我们可以设置大一点
+
+        
+
+    
+
+    
+

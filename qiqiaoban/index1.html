@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<canvas id="mycanvas" width="700" height="700" style="border: 1px solid #0E2D5F"></canvas>
+<script>
+    window.onload = function(){
+        var canvas = document.getElementById("mycanvas");
+        var context = canvas.getContext("2d");
+
+        canvas.width = 800;
+        canvas.height = 600;
+    
+
+        context.fillStyle = "red";
+        context.fillRect(10,10,200,200);
+
+        context.globalCompositeOperation = "copy"
+        context.fillStyle = "blue";
+        context.fillRect(50,50,200,200)
+    } 
+
+ 
+</script>
+</body>
+</html>

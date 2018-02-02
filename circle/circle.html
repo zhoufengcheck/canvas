@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id = "canvas" style="border:1px solid #f7cd96">
+        您的浏览器不支持canvas,请升级浏览器
+    </canvas>
+</body>
+    <script>
+        let circleArr = [];
+        window.onload = function () {
+            let canvas  = document.getElementById('canvas');
+            let context = canvas.getContext('2d');
+            canvas.width = 1000;
+            canvas.height = 600;
+
+            
+             
+            for(let i = 0; i<70; i++){
+
+                let r= 20*Math.random()+30;
+                let x = (canvas.width-2*r)*Math.random()+r
+                let y = (canvas.height-2*r)*Math.random()+r
+
+                let R = parseInt(255*Math.random())
+                let G = parseInt(255*Math.random())
+                let B = parseInt(255*Math.random())
+
+                drawCircle(x,y,r,context,R,G,B)
+            }   
+
+
+            let interval = setInterval(function(){
+                render (context, canvas.width, canvas.height);
+            },100)     
+        }
+
+        function render(context, w_width, w_height){
+
+            context.clearRect(0, 0, w_width, w_height);
+            
+            for(let i = 0; i<circleArr.length;i++){
+                circleArr[i].x += circleArr[i].vx;
+                circleArr[i].y += circleArr[i].vy;
+
+                //小于0
+                if(circleArr[i].x- circleArr[i].r < 0 ){
+                    circleArr[i].x = circleArr[i].r;
+                    circleArr[i].vx = Math.abs(circleArr[i].vx);
+                    circleArr[i].vy = Math.pow( -1, Math.ceil(Math.random()*1000) )*4+Math.random()*2;
+
+                }
+
+                else if(circleArr[i].x > w_width- circleArr[i].r){
+                    circleArr[i].x = w_width-circleArr[i].r;
+
+                    circleArr[i].vx = -Math.abs(circleArr[i].vx);
+                    circleArr[i].vy = Math.pow( -1, Math.ceil(Math.random()*1000) )*4+Math.random()*2;
+            
+                }
+                else if(circleArr[i].y- circleArr[i].r <0){
+                    circleArr[i].y = circleArr[i].r;
+                   
+                    circleArr[i].vy = Math.abs(circleArr[i].vy) ;
+                    circleArr[i].vx = Math.pow( -1, Math.ceil(Math.random()*1000) )*4+Math.random()*2;
+    
+                }
+
+                else if(circleArr[i].y > w_height- circleArr[i].r){
+                    circleArr[i].y = w_height-circleArr[i].r;
+
+                    circleArr[i].vy = -Math.abs(circleArr[i].vy);
+                    circleArr[i].vx = Math.pow( -1, Math.ceil(Math.random()*1000) )*4+Math.random()*2;
+
+                }
+
+
+
+                context.beginPath();
+                context.globalCompositeOperation = "xor"
+                context.fillStyle = "rgb(" + circleArr[i].R + ","+ circleArr[i].G + "," + circleArr[i].B +")";
+                context.arc(circleArr[i].x, circleArr[i].y, circleArr[i].r, 0, 2*Math.PI, false);
+                context.fill();
+                context.closePath();
+            }
+        }
+
+        function drawCircle(x,y,r,context,R,G,B){
+            context.beginPath();
+            context.globalCompositeOperation = "xor"
+            context.fillStyle = "rgb(" + R + ","+ G + "," + B +")";
+            context.arc(x, y, r, 0, 2*Math.PI, false);
+            context.fill();
+            context.closePath();
+            
+            let obj = {
+                x:x, y:y, r:r,
+                R:R, G:G, B:B,
+                vx: Math.pow( -1, Math.ceil(Math.random()*1000) )*4,
+                vy: Math.pow( -1, Math.ceil(Math.random()*1000) )*4,
+            }
+            circleArr.push(obj)
+        }
+    </script>
+</html>

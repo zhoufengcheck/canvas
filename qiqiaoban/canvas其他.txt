@@ -1,0 +1,28 @@
+1:阴影
+    context.shadowColor = "#333"; 颜色
+    context.shadowOffsetX = 5; x位移
+    context.shadowOffsetY = 5; y位移
+    context.shadowBlur = 5; 阴影扩散
+
+    设置完上面代码后，你画完图形，会自动带上该阴影
+
+2:context.globalAlpha = 0.2
+  设置整个绘制环境，使其透明度为0.2
+
+3:context.globalCompositeOperation
+
+    (1)source-over 默认 后绘制的图形压在先绘制的上面
+        source-atop 
+        source-in 
+        source-out 
+
+
+    (2)destination-over 先绘制的图形压在后绘制的上面
+        destination-atop 
+        destination-in 
+        destination-out 
+
+    (3) lighter 重叠部分颜色变浅
+        xor  重叠部分镂空
+        copy  最后绘制的图形
+

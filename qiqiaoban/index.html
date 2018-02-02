@@ -22,33 +22,37 @@
 </body>
 <script>
     window.onload = function () {
-        let canvas1 = document.getElementById('canvas1');
 
-        var context1=canvas1.getContext('2d');
+        if(new Date('2018-01-11') > new Date("2017-09-03")){
+           console.log(true)
+        }
+        // let canvas1 = document.getElementById('canvas1');
 
-        context1.beginPath();
+        // var context1=canvas1.getContext('2d');
 
-        context1.moveTo(20,20);
+        // context1.beginPath();
 
-        context1.lineTo(100,100);
+        // context1.moveTo(20,20);
 
-        context1.lineWidth=5;
+        // context1.lineTo(100,100);
 
-        context1.stroke();
+        // context1.lineWidth=5;
+
+        // context1.stroke();
 
 
-        let canvasW = 400;
-        let canvasH = 400;
-        let path = [
-           [{x:0,y:0},{x:canvasW,y:0},{x:canvasW/2,y:canvasH/2},{color:'#f7cd96'}],
-           [{x:0,y:0},{x:0,y:canvasW},{x:canvasW/2,y:canvasH/2},{color:'#1cf5a2'}],
-           [{x:canvasW,y:0},{x:canvasW,y:canvasH/2},{x:canvasW*3/4,y:canvasH/4},{color:'#e0f78f'}],
-           [{x:canvasW,y:canvasH/2},{x:canvasW,y:canvasH},{x:canvasW/2,y:canvasH},{color:'pink'}],
-           [{x:canvasW/2,y:canvasH/2},{x:canvasW*3/4,y:canvasH*3/4},{x:canvasW/4,y:canvasH*3/4},{color:'#a6ff00'}],
-           [{x:canvasW*3/4,y:canvasH/4},{x:canvasW,y:canvasW/2},{x:canvasW*3/4,y:canvasH*3/4},{x:canvasW/2,y:canvasH/2},{color:'#f19cdf'}],
-           [{x:canvasW/4,y:canvasH*3/4},{x:canvasW*3/4,y:canvasH*3/4},{x:canvasW/2,y:canvasH},{x:0,y:canvasH},{color:'#d1edfa'}],
+        // let canvasW = 400;
+        // let canvasH = 400;
+        // let path = [
+        //    [{x:0,y:0},{x:canvasW,y:0},{x:canvasW/2,y:canvasH/2},{color:'#f7cd96'}],
+        //    [{x:0,y:0},{x:0,y:canvasW},{x:canvasW/2,y:canvasH/2},{color:'#1cf5a2'}],
+        //    [{x:canvasW,y:0},{x:canvasW,y:canvasH/2},{x:canvasW*3/4,y:canvasH/4},{color:'#e0f78f'}],
+        //    [{x:canvasW,y:canvasH/2},{x:canvasW,y:canvasH},{x:canvasW/2,y:canvasH},{color:'pink'}],
+        //    [{x:canvasW/2,y:canvasH/2},{x:canvasW*3/4,y:canvasH*3/4},{x:canvasW/4,y:canvasH*3/4},{color:'#a6ff00'}],
+        //    [{x:canvasW*3/4,y:canvasH/4},{x:canvasW,y:canvasW/2},{x:canvasW*3/4,y:canvasH*3/4},{x:canvasW/2,y:canvasH/2},{color:'#f19cdf'}],
+        //    [{x:canvasW/4,y:canvasH*3/4},{x:canvasW*3/4,y:canvasH*3/4},{x:canvasW/2,y:canvasH},{x:0,y:canvasH},{color:'#d1edfa'}],
 
-        ]
+        // ]
 
         let canvas = document.getElementById('canvas');
         canvas.width = canvasW;

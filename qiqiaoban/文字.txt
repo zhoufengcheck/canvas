@@ -1,0 +1,72 @@
+1 文字基础
+    context.font = "bold 40px Arial"
+    context.fillStyle = 'red';
+    context.fillText("嗯呢",20,40)
+
+    context.strokeStyle = 'red';
+    context.strokeText("嗯呢",20,100)
+
+
+    主要是
+     cntext.fillStyle(string, x , y, [maxLength可选参数])
+     cntext.strokeText(string, x , y, [maxLength可选参数])
+     maxLength表示最大长度，把文字强行压缩这个长度（前提是这个长度要小于当前这个字的长度。才能实现压缩）
+
+2 font 
+    
+    默认值：	10px sans-serif
+    JavaScript 语法：	context.font="italic small-caps bold 12px arial";
+
+    其他属性看连接文档http://www.w3school.com.cn/tags/canvas_font.asp
+
+3 文本对齐
+
+    (1) context.textAlign = "letf/right/center"
+
+
+        context.fillText("嗯呢",100,40)  //默认是left
+
+        context.textAlign = "left"
+        context.fillText("嗯呢",100,100)
+
+        context.textAlign = "center"
+        context.fillText("嗯呢",100,160)
+
+        context.textAlign = "right"
+        context.fillText("嗯呢",100,220)
+
+    (2) context.textBaseline = "top/middle/bottom/ideographic/hanging/alphabetic默认"
+
+        http://www.w3school.com.cn/tags/canvas_textbaseline.asp
+
+        可以看效果
+        context.textBaseline = "alphabetic"   //西文字母
+        context.fillText("中文测试aajsep",100,100)
+        drawLine(100,context);
+
+        context.textBaseline = "hanging"    //印度文
+        context.fillText("中文测试aajsep",100,180)
+        drawLine(180,context);
+
+
+        context.textBaseline = "ideographic"   //方块字比如中文，日文
+        context.fillText("中文测试aajseajsep",100,320)
+        drawLine(320,context);
+
+        //绘制基线
+        function drawLine(height,context){
+            context.beginPath();
+            context.strokeStyle="#ccc";
+            context.lineTo(0,height);
+            context.lineTo(800,height)
+            context.closePath();
+            context.stroke();
+        }
+
+4 context.measureText(String).width
+    在当前字体下，获取文字的宽度 ，不同字体宽度不同
+    
+    context.textBaseline = "alphabetic"
+    context.fillText("中文测试aajsep",100,100)
+    let wid = context.measureText("中文测试aajsep1").width;
+    context.fillText("上面文字的宽度是"+wid,100,200)

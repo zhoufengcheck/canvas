@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <style>
+    </style>
+</head>
+<body>
+    <canvas id = "canvas" style="border:1px solid #f7cd96">
+        您的浏览器不支持canvas,请升级浏览器
+    </canvas>
+   
+</body>
+<script>
+    window.onload = function () {
+       
+        let canvasW = 700;
+        let canvasH = 700;     
+
+        let canvas = document.getElementById('canvas');
+        canvas.width = canvasW;
+        canvas.height = canvasH;
+        if(canvas.getContext('2d')){
+            let context = canvas.getContext('2d');
+            context.lineWidth = 5;  
+            context.lineJoin = 'miter';
+            context.miterLimit = 40
+           
+            for(let i = 0 ; i<1 ;i++){
+                let x = Math.random()*canvas.width;
+                let y = Math.random()*canvas.height;
+                let R = 10*Math.random()+10;
+                let rotate = 360*Math.random();
+                drawStar(R, R/2.0, x, y, context,rotate) 
+            }
+            
+           
+        }else{
+            alert('您的浏览器不支持canvas,请升级浏览器')
+        }
+
+      
+       
+    }
+
+    function drawStar(R, r, x, y, ctx,rotate){
+        ctx.save()
+        ctx.beginPath();
+
+        ctx.strokeStyle = "red"
+        ctx.fillStyle = "pink"
+        ctx.translate(x,y);
+        ctx.rotate(rotate*Math.PI/180)
+        startPath(ctx)
+       
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore()
+    }
+    function startPath(ctx){
+        for(let i = 0; i<5 ;i++){
+            ctx.lineTo(
+                Math.cos( (i*72+18)/ 180 * Math.PI )*20,
+                Math.sin( (i*72+18)/ 180 * Math.PI )*20
+
+            )
+            ctx.lineTo(
+                0.5*Math.cos( (i*72+54)/180 * Math.PI )*20,
+                0.5*Math.sin( (i*72+54)/180 * Math.PI )*20
+            )
+        }
+    }
+</script>
+</html>

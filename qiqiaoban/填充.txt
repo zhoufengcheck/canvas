@@ -1,0 +1,60 @@
+一:fillStyle 填充
+    1：color 颜色 #333，red, rgb(11,2,1),rgba(11,2,1,0.1) 还有hsl 和 hslaS
+
+    2:渐变
+        线性渐变  let grd = context.createLinearGradient(xS,xE,yS,yE);
+        镜像渐变  let grd = context.createRadialGradient(x0,y0,r0,x1,y1,r1);
+
+        加入渐变颜色 grd.addColorStop(0.0,'red')
+                    grd.addColorStop(0.1,'blue')
+
+    3:img 图片  createPattern(img , "repeat/no-repeat/repeat-x/repeat-y")
+        var backgroundImage = new Image();
+        backgroundImage.src = "pic.png";
+        backgroundImage.onload = function(){
+            var pattern = context.createPattern(backgroundImage,"repeat");
+            context.fillStyle = pattern;
+            context.fillRect(0, 0, 800, 600)
+        }
+    
+    4:vedio 没试过
+
+    5:canvas createPattern(canvas , "repeat/no-repeat/repeat-x/repeat-y")
+    
+        let backCanvas = createCanvas()
+        backgroundImage.onload = function(){
+            var pattern = context.createPattern(backCanvas,"repeat");
+            context.fillStyle = pattern;
+            context.fillRect(0, 0, 800, 600)
+        }
+
+        function createCanvas(){
+            let backCanvas = document.createElement('canvas');
+            backCanvas.width = 100;
+            backCanvas.height = 100;
+            let ctx = backCanvas.getContext('2d');
+            ctx.beginPath();
+            ctx.strokeStyle = "red"
+            ctx.moveTo(0,0);
+            ctx.lineTo(100,100);
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.strokeStyle = "red"
+            ctx.moveTo(0,100);
+            ctx.lineTo(100,0);
+            ctx.stroke();
+            ctx.closePath(); 
+            return backCanvas
+            
+        }
+
+    
+二:strokeStyle 
+    之前我们给strokeStyle赋值也是赋值color，其实strokeStyle也是可以和fillStyle 一样赋其他值
+    我只是校验 img ,canvas,渐变
+    vedio没有校验
+    
+
+    

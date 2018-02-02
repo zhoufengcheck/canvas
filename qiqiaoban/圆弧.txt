@@ -1,0 +1,28 @@
+1:context.arc(x,y,R,beginA,endA,顺逆时针)
+    x,y 表示圆心位置
+    R：表示半径
+    beginA:表示起始角度 比如0.5*Math.PI
+    endA:表示结束角度 比如0.5*Math.PI
+    顺逆时针：默认false(顺时针)，true(逆时针)
+
+2:context.arcTo(x1,y1,x2,y2,R)  圆弧
+    context.moveTo(x0,y0)起始点
+    x1,y1 控制点
+    x2,y2 结束点
+    R 半径
+
+3:context.quadraticCurveTo(x1,y1,x2,y2) 二次贝塞尔曲线 
+    context.moveTo(x0,y0)起始点
+    x1,y1 控制点
+    x2,y2 结束点
+
+    可以看这里http://blogs.sitepointstatic.com/examples/tech/canvas-curves/quadratic-curve.html
+    
+
+4:  ctx.moveTo(20, 253);
+    ctx.bezierCurveTo(x1,y1,x2,y2,x3,y3);三次贝塞尔曲线 
+
+    context.moveTo(x0,y0)起始点
+    x1,y1 控制点
+    x2,y2 控制点
+    x3,y3 结束点
