@@ -26,3 +26,23 @@
         xor  重叠部分镂空
         copy  最后绘制的图形
 
+4:context.clip() 剪切
+
+5:非零环绕效果
+    原理：我们可以看那张图片
+    非零环绕效果可以做镂空效果的剪影
+
+    绘制圆环，镂空中间圆
+    canvas.width = 800;
+    canvas.height = 600;
+    context.beginPath();
+    context.arc(400,300,100,0,2*Math.PI,false);
+    context.arc(400,300,200,0,2*Math.PI,true);
+    context.closePath();
+
+    context.fillStyle = "red";
+    context.shadowColor = "gray";
+    context.shadowOffsetX = 10;
+    context.shadowOffsetY = 10;
+    context.shadowBlur = 10;
+    context.fill()
