@@ -46,3 +46,10 @@
     context.shadowOffsetY = 10;
     context.shadowBlur = 10;
     context.fill()
+
+6:context.clearRect(x,y,width,height)  
+    清空某块区域，在制作动画时用的比较多
+
+7：context.isPointInPath(x,y);
+    isPointInPath() 方法返回 true，如果指定的点位于当前路径中；否则返回 false。
+    记住是当前路径中 !!!!!!!
