@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1">
+    <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />	<meta name="format-detection" content="telephone=no">
+    <title>Document</title>
+    <style>
+        html,body{
+            width:100%;
+            height: 100%;
+        }
+        html,body,div{
+            padding: 0;
+            margin: 0;
+        }
+        .content{
+            width: 100%;
+            height: 100%;
+        }
+        #container{
+            position: relative;
+            margin:0 auto;
+            overflow: hidden;
+        }
+
+        #img{
+            position: absolute;
+            width:100%;
+            height: 100%;
+            text-align: center;
+            width: 600px;
+            height: 400px;
+            filter:blur(5px);
+            -webkit-filter: blur(5px);
+            -moz-filter:blur(5px);
+            -o-filter:blur(5px);
+            z-index:1;
+        }
+        #canvas{
+            position: absolute;
+            z-index: 100
+        }
+        .btn{
+            width: 80px;
+            height: 30px;
+            display: block;
+            position: absolute;
+            font-size: 14px;
+            color: #fff;
+            bottom: 30px;
+            z-index: 1000;
+            text-align: center;
+            line-height: 30px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .reset{
+            left: 30px;
+            background: rgb(83, 170, 252);
+        }
+        .show{
+            right: 30px;
+            background: rgb(57, 247, 82);
+        }
+
+
+    </style>
+    <script src="jquery-3.3.1.min.js"></script>
+</head>
+<body>
+    <div class = "content">
+        <div id = "container">
+            <img src="pic.jpg" id = "img">
+            <canvas id = "canvas"></canvas>
+            <span class = "btn reset" id = "reset">reset</span>
+            <span class = "btn show" id = "show">show</span>
+        </div>
+        
+    </div>
+    
+</body>
+<script>
+    
+
+    /*
+        *全局变量
+    */
+
+    let globalObj = {
+        leftMargin:0, //用于对比图片与canvas的宽度
+        topMargin:0,//用于对比图片与canvas的高度
+        interval:null, //动画
+        clippingRegion:null,//剪切原对象
+    }
+
+    let canvas = null;
+    let reset = null;
+    let show = null;
+    let context = null;
+    let img = null;
+
+
+
+    window.onload = function(){
+        canvas = document.getElementById('canvas');
+        reset = document.getElementById('reset');
+        show = document.getElementById('show');
+        context = canvas.getContext('2d');
+
+        Method.init();
+        window.onresize = function(){
+            Method.init();
+        };      
+       
+    }
+    
+    let Method = {
+        init:()=>{
+            $(reset).off('click');
+            $(show).off('click')
+
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+
+            img = new Image();
+            img.src = "pic.jpg";
+
+            img.onload = function(e){
+                $('#container').css('width',canvas.width+'px');
+                $('#container').css('height',canvas.height+'px');
+
+                $('#img').css('width',img.width+'px');
+                $('#img').css('height',img.height+'px');
+
+                globalObj.leftMargin = (img.width-canvas.width)/2;
+                globalObj.topMargin = (img.height-canvas.height)/2;
+
+                Method.getNewClipRegion()
+
+                $('#img').css('left',String(-globalObj.leftMargin)+'px');
+                $('#img').css('top',String(-globalObj.topMargin)+'px');
+
+                Method.initCanvas();
+            }
+
+            setTimeout(()=>{
+                reset.addEventListener('click',Method.resetCircle);
+                show.addEventListener('click',Method.showCanvas);
+            },0);
+
+        },
+        resetCircle:()=>{
+            clearInterval(globalObj.interval)
+
+            Method.getNewClipRegion();
+            Method.initCanvas();
+        },
+
+        getNewClipRegion(){
+            let r= 50;
+            let x = (canvas.width-2*r+Math.min(0,globalObj.leftMargin)*2)*Math.random()+r-Math.min(0,globalObj.leftMargin);
+            let y = (canvas.height-2*r+Math.min(0,globalObj.topMargin)*2)*Math.random()*0.8-Math.min(0,globalObj.topMargin);
+            globalObj.clippingRegion = {x:x, y:y, r:r}
+        },
+
+        showCanvas:()=>{
+            globalObj.interval = setInterval(()=>{
+
+                let r = globalObj.clippingRegion.r+4;
+
+                if(r > Method.dis(canvas.width, canvas.height)+20){                   
+                    clearInterval(globalObj.interval)
+                    return
+                }
+
+                globalObj.clippingRegion.r = r
+                Method.initCanvas();
+            },10)
+        },
+
+        initCanvas:()=>{
+
+            context.clearRect(0,0,canvas.width,canvas.height);
+       
+            context.save()
+
+            Method.setClip();
+            context.drawImage(
+                img,
+                globalObj.leftMargin>0?globalObj.leftMargin:0, 
+                globalObj.topMargin>0?globalObj.topMargin:0,
+                Math.min(canvas.width,img.width), Math.min(canvas.height,img.height),
+                globalObj.leftMargin>0?0:-globalObj.leftMargin, 
+                globalObj.topMargin>0?0:-globalObj.topMargin,
+                Math.min(canvas.width,img.width), Math.min(canvas.height,img.height),
+            )
+            context.restore();
+        },
+        setClip:()=>{
+
+            context.beginPath();
+            context.arc(
+                globalObj.clippingRegion.x, globalObj.clippingRegion.y, 
+                globalObj.clippingRegion.r, 
+                0, Math.PI*2, false)
+            context.clip()
+        },
+
+        dis:(x,y)=>{
+            return Math.sqrt(x*x+y*y);
+        }
+    }
+
+</script>
+</html>
