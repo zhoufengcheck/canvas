@@ -73,7 +73,7 @@ function initSize(){
 
     $('.grid-cell').css('width',cellSideLength);
     $('.grid-cell').css('height',cellSideLength);
-    $('.grid-cell').css('border-radius',cellSideLength*0.02);
+    $('.grid-cell').css('border-radius',10);
 
     newGame();
 
@@ -206,7 +206,7 @@ document.addEventListener('touchend',function(event){
     let distanceX = endX-startX;
     let distanceY = endY-startY;
 
-    if( Math.abs(distanceX) < 0.3*documentWidth && Math.abs(distanceY) < 0.3*documentWidth){
+    if( Math.abs(distanceX) < 0.2*documentWidth && Math.abs(distanceY) < 0.2*documentWidth){
         return
     }
 
