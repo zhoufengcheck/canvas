@@ -1,16 +1,20 @@
-let board = new Array();
-let hasConflicted = new Array();
+//全局数据 
+let board = new Array(); //方格数字存储
+let hasConflicted = new Array(); //4x4方格，判断在每次移动后，每一个数字是否有合并过，合并了就不在合并了
 let score = 0;
 
-let startX = 0;
-let startY = 0;
-let endX = 0;
-let endY = 0;
+//手机滑动
+let startX = 0; //开始点x
+let startY = 0; //开始点y
+let endX = 0;//结束点x
+let endY = 0;//结束点y
 
-
+//页面初始化
 window.onload = function(){
     initSize()
 }
+
+//页面尺寸发生变化 重新初始化
 window.onresize = function(){
     initSize()
 }
@@ -20,16 +24,23 @@ function newGame(){
     //初始化棋盘格
     initGrid()
 
-    // //生成随机数字
+    // board[0][1]=1024
+    // showNumberWithAnimation(0,1,1024)
+
+
+    //生成随机数字
     generateOneNumber();
     //生成随机数字
     generateOneNumber();
 
+    //初始化分数为0
     score = 0;
 }
 
-
+//初始化16个格子的位置，16个格子，绝对定位
 function initGrid(){
+
+    //初始化格子位置
     for(let i = 0; i<4; i++){
         for(let j = 0; j<4; j++){
             let grid_cell = $('#grid-cell-'+i+'-'+j);
@@ -39,6 +50,7 @@ function initGrid(){
         }  
     }
 
+    //初始化board和hasConflicted的数据
     for(let i = 0; i<4; i++){
 
         board[i] = new Array();
@@ -79,20 +91,31 @@ function initSize(){
 
 }
 
+//对board里面的数据在棋盘格子里面进行渲染
+
 function updateBoardView(){
+
+    //把所有现有的.number-cell去掉，开始新的渲染
     $('.number-cell').remove();
+
+    //渲染
     for(let i = 0; i<4; i++){
         for(let j = 0; j<4; j++){
             $('#grid-container').append('<div class = "number-cell" id ="number-cell-'+i+'-'+j+'"></div>')
             let theNumberCeil = $('#number-cell-'+i+'-'+j);
             
-            if(board[i][j] ==0){
+            //该数字为0， 
+            if(board[i][j] ==0){  
                 theNumberCeil.css('width','0px');
                 theNumberCeil.css('height','0px');
                 theNumberCeil.css('top',getPosTop(i,j) + cellSideLength/2);
                 theNumberCeil.css('left',getPosLeft(i,j) + cellSideLength/2);
             }
+            //不为0
             else{
+                if(board[i][j]>=1024){ //大于1024，改变字体大小，太大会溢出
+                    theNumberCeil.css('font-size',cellSideLength*0.3); 
+                }
                 theNumberCeil.css('width',cellSideLength);
                 theNumberCeil.css('height',cellSideLength);
                 theNumberCeil.css('top',getPosTop(i,j));
@@ -118,12 +141,14 @@ function updateScore(score){
 //生成一个随机数（2,4）
 function generateOneNumber() {
 
+    //没有位置了
     if(!nospace(board)) return false;
 
     //随机一个位置
     let randomX = parseInt(Math.random() *4)  //[0,1)
     let randomY = parseInt(Math.random() *4)  //[0,1)
 
+    //解决多次随机都找不到空格的问题
     let times = 0
     while(times<50){
         if(board[randomX][randomY] == 0){
@@ -134,6 +159,7 @@ function generateOneNumber() {
         times++
     }
 
+    //50次都没有找到，我们就自己手动找
     if(times == 50){
         for(let i = 0; i<4; i++){
             for(let j = 0; j<4; j++){
@@ -157,10 +183,12 @@ function generateOneNumber() {
 
 }
 
+//电脑键盘按键
 $(document).keydown( function(event){
     switch(event.keyCode){
         case 37: //left
-            event.preventDefault();
+            event.preventDefault();   //为了解决在电脑按上下左右键是带来的屏幕滚动
+
             if( moveLeft() ) { //判断是否可以移动
                 setTimeout("generateOneNumber()",210);
                 setTimeout("isGameOver()",300);
@@ -168,6 +196,7 @@ $(document).keydown( function(event){
             break;
         case 38: //top
             event.preventDefault();
+
             if( moveTop() ) {
                 setTimeout("generateOneNumber()",210);
                 setTimeout("isGameOver()",300);
@@ -175,6 +204,7 @@ $(document).keydown( function(event){
             break;
         case 39: //right
             event.preventDefault();
+
             if( moveRight() ) {
                 setTimeout("generateOneNumber()",210);
                 setTimeout("isGameOver()",300);
@@ -182,6 +212,7 @@ $(document).keydown( function(event){
             break;
         case 40: //down
             event.preventDefault();
+
             if( moveDown() ) {
                 setTimeout("generateOneNumber()",210);
                 setTimeout("isGameOver()",300);
@@ -191,14 +222,19 @@ $(document).keydown( function(event){
             break; //else
     }
 })
+
+//手机滑动开始
 document.addEventListener('touchstart',function(event){
     startX = event.touches[0].pageX;
     startY = event.touches[0].pageY;
 })
+
+//禁用掉手机touchmove，说是会阻碍touchstart和touchend
 document.addEventListener('touchmove',function(event){
     event.preventDefault();
 })
 
+//手机滑动结束
 document.addEventListener('touchend',function(event){
     endX = event.changedTouches[0].pageX;
     endY = event.changedTouches[0].pageY;
@@ -246,25 +282,38 @@ document.addEventListener('touchend',function(event){
     }
 })
 
+
+//游戏是否结束
 function isGameOver(){
+    //没有空位且不可移动
     if(!nospace(board) && noMove(board)){
         gameOver();
     }
 }
+
+//游戏结束
 function gameOver(){
+    //现在是简单些，可以写更多好看的效果
     alert('gameOver');
 }
 
+//向左边移动
 function moveLeft(){
-    if( !canMoveLeft(board) ){
+    
+    //如果不能向左边移动，我们直接返回
+    if( !canMoveLeft(board) ){ 
         return false
     }
-    //moveLeft
+    //moveLeft 对每一个数字都要试一遍，但是最左边一列就不用了，最左边也不能移动了
     for(let i = 0; i<4; i++){
-        for(let j = 1; j<4; j++){
+        for(let j = 1; j<4; j++){  //第一列，最左边一列不遍历
 
-            if( board[i][j] != 0 ){
+            if( board[i][j] != 0 ){ //前提是该数不为0，我们采取判断是都移动他
+
+                //开始检查i行的数字，从左边0到j，
                 for(let k = 0; k<j; k++){
+
+                    //如果左边的数字为0，且没有障碍物 ，移动，变化数值
                     if( board[i][k] == 0 && noBlockHorizontalRow(i, j, k, board)){
         
                          //move
@@ -275,6 +324,7 @@ function moveLeft(){
             
                         continue;
                     }
+                    //如果左边的数字与该数相同，且没有障碍物 ，移动，变化数值，加分，且碰撞叠加后就不再次叠加了
                     else if(board[i][k] == board[i][j] && noBlockHorizontalRow(i, j, k, board) && !hasConflicted[i][k]){
 
                         //move
@@ -296,6 +346,7 @@ function moveLeft(){
         }  
     }
 
+    //更新棋盘格
     setTimeout(()=>{
       updateBoardView()  
     },200)
@@ -304,17 +355,22 @@ function moveLeft(){
     return true;
 }
 
-
+//向右移动
 function moveRight(){
+    //判断是否可以向右移动
     if(!canMoveRight(board)){
         return false
     }
 
+    //向右边移动
     for(let i = 0; i<4; i++){
-        for(let j = 2; j>=0; j--){
+        
+        //最右边一列不遍历，已经最右边了，不能移动了。注意：关键点是需要从最右边往最左边开始遍历，一一向右移动
+        for(let j = 2; j>=0; j--){  
 
+            //其他逻辑和左移动差不多
             if(board[i][j] !==0){
-                for(let k = 3; k>j; k--){
+                for(let k = 3; k>j; k--){ //这里也是从最右边开始，想一下就名mignbai
                     if(board[i][k] == 0 && noBlockHorizontalRow(i, k, j, board)){
 
                         showMoveAnimation(i, j, i, k);
@@ -346,14 +402,18 @@ function moveRight(){
     return true
 }
 
+//向上移动
 function moveTop(){
+
+    //判断是否可以向上移动
     if(!canMoveTop(board)){
         return false
     }
 
+    //移动
     for(let j = 0; j<4; j++){
-        for(let i = 1; i<4; i++){
-
+        for(let i = 1; i<4; i++){ //最上面一栏不需要遍历，本来就是在最顶上，没有可移动的位置了
+            //和上面逻辑差不多
             if(board[i][j] != 0){
                 for(let k = 0; k<i; k++){
 
@@ -386,16 +446,19 @@ function moveTop(){
     return true
 }
 
+//向下移动
 function moveDown(){
+    //判断是否可以移动
     if(!canMoveDown(board)){
         return false
     }
-
+    //移动
     for(let j = 0; j<4; j++){
-        for(let i = 2; i>=0; i--){
+        //最底部一栏不需要判断，但是注意，这里从底部向上开始遍历，才能一一往下移动
+        for(let i = 2; i>=0; i--){ 
             if(board[i][j] != 0){
-                for(let k = 3; k>i; k--){
-
+                for(let k = 3; k>i; k--){ //同理从下往上遍历
+                    //其他就是和上面逻辑差不多
                     if(board[k][j] == 0 && noBlockHorizontalCol(j, k, i, board)){
                         showMoveAnimation(i, j, k, j);
                         board[k][j] = board[i][j];
