@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div>
+        <button id="linear">linear</button>
+        <button id="easeIn">ease in</button>
+        <button id="easeOut">ease out</button>
+        <button id="easeInOut">ease in out</button>
+        <button id="elastic">elastic</button>
+        <button id="bounce">bounce</button>
+    </div>
+    <div>
+        <button id="left">left</button>
+        <button id="right">right</button>
+    </div>
+    <canvas id="canvas" style="border:1px solid red"></canvas>
+</body>
+<script src="../shared/js/stopwatch.js"></script>
+<script src="../shared/js/animationTimer.js"></script>
+<script src="../shared/js/sprites.js"></script>
+<script>
+    const linear = AnimationTimer.makeLinear(),
+        easeIn = AnimationTimer.makeEaseIn(1),
+        easeOut = AnimationTimer.makeEaseOut(1),
+        easeInOut = AnimationTimer.makeEaseInOut(),
+        elastic = AnimationTimer.makeElastic(4),
+        bounce = AnimationTimer.makeBounce(5),
+        ballLocations = []
+
+
+    const canvas = document.getElementById('canvas');
+    canvas.height = 350;
+    canvas.width = 800;
+    const context = canvas.getContext('2d');
+    const pushAnimationTimer = new AnimationTimer(3600)
+    let arrow = "left"
+    drawPath()
+    initButton()
+
+    const ballMove = {
+        lastTime: undefined,
+
+        resetBall: function () {
+            ball.left = 60;
+            ball.top = 279;
+        },
+
+
+        updateBallPosition: function (elapsed) {
+
+            if (arrow === 'left') {
+                ball.left -= ball.velocityX * (elapsed / 1000);
+            }
+            else {
+                ball.left += ball.velocityX * (elapsed / 1000);
+            }
+        },
+
+        execute: function (ball, context, time) {
+            if (pushAnimationTimer.isRunning()) {
+                var animationElapsed = pushAnimationTimer.getElapsedTime(),
+                    elapsed;
+                if (this.lastTime !== undefined) {
+                    elapsed = animationElapsed - this.lastTime;
+
+                    this.updateBallPosition(elapsed);
+                    ballLocations.push(ball.left);
+
+                    if (ball.left > 700 || ball.left < 50) {
+                        pushAnimationTimer.stop();
+                        this.resetBall();
+                    }
+                    else {
+                        if (pushAnimationTimer.isOver()) {
+                            pushAnimationTimer.stop();
+                        }
+                    }
+                }
+            }
+            this.lastTime = animationElapsed;
+        }
+    }
+    const ball = new Sprite('ball',
+        {
+            paint: function (sprite, context) {
+                context.beginPath();
+                context.arc(sprite.left, sprite.top,
+                    ball.radius, 0, Math.PI * 2, false);
+
+                context.lineWidth = 1;
+                context.strokeStyle = 'rgb(100,100,195)';
+                context.fillStyle = 'rgba(30,144,255,0.15)';
+                context.fill();
+                context.stroke();
+            }
+        },
+        [ballMove]
+    );
+    ball.left = 60;
+    ball.top = 279;
+    ball.radius = 20;
+    ball.velocityX = 100;
+    ball.velocityY = 0;
+    ball.paint(context)
+
+    let lastTime = 0
+    let fps = 0
+    function calculateFps(time) {
+        var fps = 1000 / (time - lastTime);
+        lastTime = time;
+        return fps;
+    }
+
+    var framecnt = 0;
+
+    function animate(time) {
+        fps = calculateFps(time);
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        ball.update(context, time);
+        ball.paint(context);
+        drawPath()
+        window.requestAnimationFrame(animate);
+    }
+    window.requestAnimationFrame(animate);
+
+
+    function drawPath() {
+        context.beginPath()
+        context.rect(50, 300, 700, 10)
+        context.fillStyle = "#cdcdcd";
+        context.fill()
+        context.closePath()
+    }
+
+
+    function initButton() {
+        document.getElementById('linear').onclick = function () {
+            pushAnimationTimer.timeWarp = linear;
+        }
+        document.getElementById('easeIn').onclick = function () {
+            pushAnimationTimer.timeWarp = easeIn;
+        }
+        document.getElementById('easeOut').onclick = function () {
+            pushAnimationTimer.timeWarp = easeOut;
+        }
+        document.getElementById('easeInOut').onclick = function () {
+            pushAnimationTimer.timeWarp = easeInOut;
+        }
+        document.getElementById('elastic').onclick = function () {
+            pushAnimationTimer.timeWarp = elastic
+        }
+        document.getElementById('bounce').onclick = function () {
+            pushAnimationTimer.timeWarp = bounce
+        }
+        document.getElementById('left').onclick = function () {
+            arrow = "left"
+            if (pushAnimationTimer.isRunning()) {
+                pushAnimationTimer.stop();
+            }
+            pushAnimationTimer.start();
+        }
+        document.getElementById('right').onclick = function () {
+            arrow = "right"
+            if (pushAnimationTimer.isRunning()) {
+                pushAnimationTimer.stop();
+            }
+            pushAnimationTimer.start();
+        }
+    }
+
+</script>
+
+</html>

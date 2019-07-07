@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <canvas id="canvas" style="border:1px solid red"></canvas>
+    </div>
+</body>
+<script>
+    let canvas = document.getElementById('canvas')
+    canvas.width = 400
+    canvas.height = 500;
+    let context = canvas.getContext('2d')
+    context.save()
+    context.translate(50,50)
+    context.scale(1.1,1.1)
+    context.rotate(90)
+    context.translate(-50,-50)
+    
+    context.fillRect(0,0,100,100)
+    context.restore()
+</script>
+</html>

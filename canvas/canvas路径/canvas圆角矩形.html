@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        canvas{
+            border:1px solid red
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <canvas id = canvas></canvas>
+    </div>
+</body>
+<script>
+    var canvas = document.querySelector('#canvas')
+    canvas.width = 500;
+    canvas.height = 500
+    var context = canvas.getContext('2d')
+
+    function rect(context,beginx,beginy,endx,endy,radius){
+        let instance = radius;
+        if(Math.sqrt(beginx-endx)>instance*2){
+            return;
+        }
+        if(beginx>endx){
+            instance = instance*-1
+        }
+
+        context.moveTo(beginx+instance,beginy);
+        context.lineTo(endx-instance,beginy)
+        context.arcTo(endx,beginy,endx,beginy+instance,radius);
+
+        context.lineTo(endx,endy-instance)
+        context.arcTo(endx,endy,endx-instance,endy,radius);
+
+
+        context.lineTo(beginx+instance,endy)
+        context.arcTo(beginx,endy,beginx,endy-instance,radius);
+
+        context.lineTo(beginx,beginy+instance)
+        context.arcTo(beginx,beginy,beginx+instance,beginy,radius);
+        context.stroke()
+       
+    }
+    rect(context,30,30,200,200,10)
+    rect(context,400,400,200,200,100)
+</script>
+</html>

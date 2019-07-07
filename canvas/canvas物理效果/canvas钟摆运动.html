@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div>
+        <canvas id="canvas" style="border:1px solid red"></canvas>
+    </div>
+</body>
+<script src="../shared/js/stopwatch.js"></script>
+<script src="../shared/js/animationTimer.js"></script>
+<script src="../shared/js/sprites.js"></script>
+<script>
+    const canvas = document.getElementById('canvas');
+    canvas.height = 500;
+    canvas.width = 500;
+    const context = canvas.getContext('2d');
+    const constantData = {
+        lineWidth: 300,
+        originX: 240,
+        originY: 30,
+        originR: 10,
+        lineOriginX: 240,
+        lineOriginY: 40,
+        weightR: 20,
+        degree: 40,
+        initialAngle: 40,
+        dir: "toRight"
+    }
+    let weight_x = 0;
+    let weight_y = 0;
+
+    let startTime = 0
+    const pendulumUpd = {
+        execute: (sprite, context, time) => {
+            let elapsedTime = (time - startTime) / 1000
+            constantData.degree = constantData.initialAngle * Math.cos(
+                Math.sqrt(9.18 / 1) * elapsedTime);
+        }
+    }
+    const pendulumPainter = {
+        paint: function (sprite, context) {
+            weight_x = constantData.lineWidth * Math.sin(constantData.degree / 180 * Math.PI) + constantData.lineOriginX;
+            weight_y = constantData.lineWidth * Math.cos(constantData.degree / 180 * Math.PI) + constantData.lineOriginY;
+            this.drawLine(sprite, context)
+            this.drawWeight(sprite, context)
+            this.drawOrigin(sprite, context)
+        },
+        //绘制线条
+        drawLine: function (sprite, context) {
+            context.beginPath();
+            context.moveTo(constantData.lineOriginX, constantData.lineOriginY)
+            context.lineTo(weight_x, weight_y)
+            context.stroke();
+            context.closePath()
+        },
+
+        //绘制摆动的小球
+        drawWeight: function (sprite, context) {
+            context.beginPath();
+            context.arc(weight_x, weight_y, constantData.weightR, 0, 2 * Math.PI)
+            context.stroke();
+            context.closePath()
+
+        },
+        //绘制原点
+        drawOrigin: function (sprite, context) {
+            context.beginPath();
+            context.arc(constantData.originX, constantData.originY, constantData.originR, 0, 2 * Math.PI)
+            context.stroke();
+            context.closePath()
+        }
+    }
+    let pendulum = new Sprite('pendulum', pendulumPainter, [pendulumUpd])
+
+    function animation(time) {
+        context.clearRect(0, 0, canvas.width, canvas.height)
+        pendulum.update(context, time)
+        pendulum.paint(context)
+        requestAnimationFrame(animation)
+    }
+    startTime = + new Date();
+    requestAnimationFrame(animation)
+
+
+</script>
+
+</html>

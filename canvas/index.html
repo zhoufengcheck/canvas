@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>zEditor</title>
+    <style>
+        img {
+            width: 200px
+        }
+
+        #wrapper {
+            border: 1px solid #dddddd;
+        }
+
+        #text-area {
+            background: #272822;
+            padding: 10px;
+            height: auto;
+            min-height: 100px;
+            max-height: 500px;
+            color: #e5e5e5;
+            border-radius: 5px;
+            overflow: auto;
+        }
+
+        #control-area {
+            margin-bottom: 5px;
+        }
+
+        #submit-btn {
+            margin-top: 5px;
+            width: 265px;
+            float: right;
+            margin-right: 20px;
+        }
+
+        .btn {
+            display: block;
+            font-size: 12px;
+            text-decoration: none !important;
+            padding: 3px 5px;
+            border-radius: 3px;
+            box-shadow: inset 0px 0px 2px #fff;
+        }
+
+        .left {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .middle {
+            border-radius: 0;
+        }
+
+        .right {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        .btn-group {
+            display: inline-block;
+        }
+
+        .btn-group .btn {
+            margin-right: -5px;
+            display: inline-block;
+        }
+
+        .btn-group .right {
+            margin-right: 10px;
+        }
+
+        .grey {
+            color: #444;
+            border: 1px solid #d0d0d0;
+            background-image: -moz-linear-gradient(#ededed, #e1e1e1);
+            background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#e1e1e1), to(#ededed));
+            background-image: -webkit-linear-gradient(#ededed, #e1e1e1);
+            background-image: -o-linear-gradient(#ededed, #e1e1e1);
+            text-shadow: 1px 1px 1px #fff;
+            background-color: #e1e1e1;
+        }
+
+        .blue {
+            color: #41788c;
+            border: 1px solid #6fb1c7;
+            background-image: -moz-linear-gradient(#aae5f7, #73d0f1);
+            background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#73d0f1), to(#aae5f7));
+            background-image: -webkit-linear-gradient(#aae5f7, #73d0f1);
+            background-image: -o-linear-gradient(#aae5f7, #73d0f1);
+            text-shadow: 1px 1px 1px #bfeafb;
+            background-color: #73d0f1;
+        }
+
+        .active {
+            color: red;
+
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <input type="file" id="file">
+        <div id="control-area">
+            <div class="btn-group">
+                <a href="#" class='btn left blue' data-command='undo' onclick="changeStyle(this.dataset)">◀撤销</a>
+                <a href="#" class='btn right blue' data-command='redo' onclick="changeStyle(this.dataset)">重做▶</a>
+            </div>
+            <div class="btn-group">
+                <a href="#" class='btn left grey' data-command='italic' onclick="changeStyle(this.dataset,this)">斜体</a>
+                <a href="#" class='btn middle grey' data-command='bold' onclick="changeStyle(this.dataset,this)">粗体</a>
+                <a href="#" class='btn middle grey' data-command='underline'
+                    onclick="changeStyle(this.dataset,this)">下划线</a>
+                <a href="#" class='btn right grey' data-command='strikeThrough'
+                    onclick="changeStyle(this.dataset,this)">删除线</a>
+
+                <a href="#" class='btn left grey' data-command='insertImage'
+                    onclick="changeStyle(this.dataset,this)">image</a>
+
+            </div>
+            <div class="btn-group">
+                <a href="#" class='btn left blue' data-command='justifyLeft' onclick="changeStyle(this.dataset)">左</a>
+                <a href="#" class='btn middle blue' data-command='justifyCenter'
+                    onclick="changeStyle(this.dataset)">居中</a>
+                <a href="#" class='btn middle blue' data-command='justifyRight'
+                    onclick="changeStyle(this.dataset)">右</a>
+                <a href="#" class='btn right blue' data-command='justifyFull' onclick="changeStyle(this.dataset)">两端</a>
+            </div>
+            <div class="btn-group">
+                <a href="#" class='btn left grey' data-command='indent' onclick="changeStyle(this.dataset)">右缩进</a>
+                <a href="#" class='btn right grey' data-command='outdent' onclick="changeStyle(this.dataset)">左缩进</a>
+            </div>
+            <div class="btn-group">
+                <a href="#" class='btn left blue' data-command='insertOrderedList'
+                    onclick="changeStyle(this.dataset)">有序列表</a>
+                <a href="#" class='btn right blue' data-command='insertUnorderedList'
+                    onclick="changeStyle(this.dataset)">无序列表</a>
+            </div>
+            <div class="btn-group">
+                <a href="#" class='btn left grey' data-command='superscript' onclick="changeStyle(this.dataset)">上标</a>
+                <a href="#" class='btn right grey' data-command='subscript' onclick="changeStyle(this.dataset)">下标</a>
+            </div>
+
+            <div class="btn-group">
+                <a href="#" class='btn left blue' data-command='selectAll' onclick="changeStyle(this.dataset)">全选</a>
+                <a href="#" class='btn middle blue' data-command='copy' onclick="changeStyle(this.dataset)">复制</a>
+                <a href="#" class='btn right blue' data-command='cut' onclick="changeStyle(this.dataset)">剪切</a>
+            </div>
+            <div class="btn-group">
+                <a href="#" class='btn left grey' data-command='fontSize' data-value="1"
+                    onclick="changeStyle(this.dataset)">1号</a>
+                <a href="#" class='btn middle grey' data-command='fontSize' data-value="2"
+                    onclick="changeStyle(this.dataset)">2号</a>
+                <a href="#" class='btn middle grey' data-command='fontSize' data-value="3"
+                    onclick="changeStyle(this.dataset)">3号</a>
+                <a href="#" class='btn middle grey' data-command='fontSize' data-value="4"
+                    onclick="changeStyle(this.dataset)">4号</a>
+                <a href="#" class='btn middle grey' data-command='fontSize' data-value="5"
+                    onclick="changeStyle(this.dataset)">5号</a>
+                <a href="#" class='btn middle grey' data-command='fontSize' data-value="6"
+                    onclick="changeStyle(this.dataset)">6号</a>
+                <a href="#" class='btn right grey' data-command='fontSize' data-value="7"
+                    onclick="changeStyle(this.dataset)">7号</a>
+            </div>
+            <div class="btn-group">
+                <a href="#" class='btn left blue' data-command='fontName' data-value="SimSun"
+                    onclick="changeStyle(this.dataset)">宋</a>
+                <a href="#" class='btn middle blue' data-command='fontName' data-value="SimHei"
+                    onclick="changeStyle(this.dataset)">黑</a>
+                <a href="#" class='btn middle blue' data-command='fontName' data-value="KaiTi"
+                    onclick="changeStyle(this.dataset)">楷</a>
+                <a href="#" class='btn middle blue' data-command='fontName' data-value="FangSong"
+                    onclick="changeStyle(this.dataset)">仿宋</a>
+                <a href="#" class='btn right blue' data-command='fontName' data-value="Microsoft YaHei"
+                    onclick="changeStyle(this.dataset)">雅黑</a>
+            </div>
+            <div class="btn-group">
+                <a href="#" class='btn left' data-command='foreColor' data-value="red"
+                    onclick="changeStyle(this.dataset)" style="background-color: red">&nbsp;&nbsp;</a>
+                <a href="#" class='btn middle' data-command='foreColor' data-value="orange"
+                    onclick="changeStyle(this.dataset)" style="background-color: orange">&nbsp;&nbsp;</a>
+                <a href="#" class='btn middle' data-command='foreColor' data-value="yellow"
+                    onclick="changeStyle(this.dataset)" style="background-color: yellow">&nbsp;&nbsp;</a>
+                <a href="#" class='btn middle' data-command='foreColor' data-value="green"
+                    onclick="changeStyle(this.dataset)" style="background-color: green">&nbsp;&nbsp;</a>
+                <a href="#" class='btn middle' data-command='foreColor' data-value="cyan"
+                    onclick="changeStyle(this.dataset)" style="background-color: cyan">&nbsp;&nbsp;</a>
+                <a href="#" class='btn middle' data-command='foreColor' data-value="blue"
+                    onclick="changeStyle(this.dataset)" style="background-color: blue">&nbsp;&nbsp;</a>
+                <a href="#" class='btn middle' data-command='foreColor' data-value="purple"
+                    onclick="changeStyle(this.dataset)" style="background-color: purple">&nbsp;&nbsp;</a>
+            </div>
+        </div>
+        <div id="text-area" contenteditable>
+        </div>
+        <div id="submit-btn">
+            <a href="#" class='btn left blue'
+                onclick="console.log(document.getElementById('text-area').innerHTML)">点击打印文本区域内容（含格式，控制台查看）</a>
+        </div>
+    </div>
+</body>
+<script>
+    document.getElementById('file').onchange = function (event) {
+        document.getElementById('text-area').focus()
+
+        var files = event.target.files, file;
+        if (files && files.length > 0) {
+            file = files[0];
+            // 那么我们可以做一下诸如文件大小校验的动作
+            if (file.size > 1024 * 1024 * 2) {
+                alert('图片大小不能超过 2MB!');
+                return false;
+            }
+            // !!!!!!
+            // 下面是关键的关键，通过这个 file 对象生成一个可用的图像 URL
+            // 获取 window 的 URL 工具     
+            var URL = window.URL || window.webkitURL;
+            // 通过 file 生成目标 url
+            var imgURL = URL.createObjectURL(file);
+
+            var image = new Image();
+            image.src = imgURL;
+            image.onload = function () {
+                var base64 = getBase64Image(image);
+                document.execCommand('insertImage', true, base64)
+            }
+        }
+    }
+
+    function getBase64Image(img) {
+        var canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, img.width, img.height);
+        var ext = img.src.substring(img.src.lastIndexOf(".") + 1).toLowerCase();
+        var dataURL = canvas.toDataURL("image/" + ext);
+        return dataURL;
+    }
+
+    const changeStyle = (data, event) => {
+
+        document.getElementById('text-area').focus()
+        if (event.className.indexOf('active') !== -1) {
+            event.className = event.className.replace('active', "").trim()
+        } else {
+            event.className = event.className + ' active'
+        }
+        console.log(event.className, data.value, data.command)
+        data.value ? document.execCommand(data.command, false, data.value) : document.execCommand(data.command, false, null)
+    }
+</script>
+
+</html>

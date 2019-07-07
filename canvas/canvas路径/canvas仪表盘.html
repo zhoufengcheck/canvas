@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        canvas{
+            border:1px solid red
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <canvas id = canvas></canvas>
+    </div>
+</body>
+<script>
+    var canvas = document.querySelector('#canvas')
+    canvas.width = 500;
+    canvas.height = 500
+    var context = canvas.getContext('2d')
+
+
+    
+    const obj = {
+        init(context,config){
+            this.context = context;
+            this.centerX = config.centerX||0;
+            this.centerY = config.centerY||0;
+            this.radius = config.radius || 0
+            if(!this.centerX || !this.centerY || !config.radius || !context){
+                return
+            }
+            this.drawOuter()
+            this.drawInner()
+            this.drawMark()
+            this.drawAnnotations()
+        },
+        drawOuter(){
+            let context = this.context;
+            context.fillStyle = 'rgba(100, 140, 230, 0.4)'
+            context.beginPath();
+            context.arc(this.centerX,this.centerY,this.radius,0,2*Math.PI,true);
+            context.arc(this.centerX,this.centerY,this.radius-20,0,2*Math.PI,false);
+            context.closePath()
+            context.fill()
+
+            context.beginPath();
+            context.strokeStyle="rgba(0, 0, 0, 0.4)"
+            context.arc(this.centerX,this.centerY,this.radius,0,2*Math.PI);
+            context.stroke()
+            context.closePath()
+            
+            context.save()
+            context.beginPath();
+            context.strokeStyle = 'rgba(100, 140, 230, 0.6)'
+            context.arc(this.centerX, this.centerY, this.radius-20, 0, 2*Math.PI);
+            context.stroke()
+            context.closePath()
+            context.restore()
+
+            context.save()
+            context.beginPath();
+            context.strokeStyle = 'rgba(100, 140, 230, 0.6)'
+            context.arc(this.centerX, this.centerY, this.radius-30, 0, 2*Math.PI);
+            context.stroke()
+            context.closePath()
+            context.restore()
+        },
+        drawInner(){
+            let context = this.context;
+            context.fillStyle = 'rgb(100, 140, 230)'
+            context.beginPath();
+            context.arc(this.centerX, this.centerY, 10, 0, 2*Math.PI);
+            context.closePath()
+            context.fill();
+            this.drawPointer()  
+        },
+        drawPointer(){
+            let context = this.context;
+            context.beginPath();
+            context.strokeStyle="#000";
+            context.moveTo(this.centerX,this.centerY)
+            context.lineTo(this.centerX+this.radius,this.centerY)
+            context.stroke();
+
+            context.fillStyle = 'rgba(100, 140, 230,0.9)'
+            context.beginPath();
+            context.arc(this.centerX+this.radius,this.centerY,5,0,2*Math.PI);
+            context.closePath()
+            context.fill();
+        },
+        drawMark(){
+            let ANGLE_MAX = 2*Math.PI;
+            let ANGLE_DELTA = Math.PI/64;
+            for (var angle = 0, cnt = 0; angle < ANGLE_MAX; angle += ANGLE_DELTA) {
+                this.drawTick(angle, cnt++); 
+            }
+        },
+        drawTick(angle, cnt) {
+            let context = this.context
+            let radius = this.radius
+            var tickWidth = cnt % 4 === 0 ? 10 : 10/2;
+            
+            context.beginPath();
+
+            context.moveTo(250 + Math.cos(angle) * (radius - tickWidth-20),
+                            250 + Math.sin(angle) * (radius - tickWidth-20));
+
+            context.lineTo(250 + Math.cos(angle) * (radius-20),
+                            250 + Math.sin(angle) * (radius-20));
+
+            context.strokeStyle = '#333';
+            context.stroke();
+        },
+        drawAnnotations() {
+            let context = this.context
+            var radius = this.radius-20;
+
+            context.save();
+            context.fillStyle = 'bule';
+            context.font = '12px Helvetica';
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            for (var angle=0; angle < 2*Math.PI; angle += Math.PI/8) {
+         
+                context.beginPath();
+                context.fillText((angle * 180 / Math.PI).toFixed(0),
+                    this.centerX + Math.cos(angle) * (radius - 10*2),
+                    this.centerY - Math.sin(angle) * (radius - 10*2));
+            }
+            context.restore();
+        }
+    }
+    obj.init(context,
+    {
+        centerX:250,
+        centerY:250,
+        radius:200
+    })
+</script>
+</html>

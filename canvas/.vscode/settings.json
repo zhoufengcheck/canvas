@@ -1,0 +1,5 @@
+{
+    "eslint.autoFixOnSave": true,
+    "editor.formatOnSave": true, // eslint保存格式化
+    "javascript.format.enable": false, // 不启动JavaScript格式化
+}

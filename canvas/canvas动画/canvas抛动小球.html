@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id = "canvas" style="border: 1px solid red"></canvas>
+    <script>
+        let context = null
+        let canvas = document.getElementById('canvas');
+        let width = 1024;
+        let height = 512;
+        let circleObj = {
+            x:100,
+            y:100,
+            r:50,
+            disX:0,
+            disY:0,
+        }
+        let move = false;
+        let startX = 0,startY=0,endX=0,endY=0,beginX=0,beginY=0;
+        let beginTime = 0;
+        let endTime = 0
+        let request_animation = null
+
+
+        window.onload = function(){
+            canvas.width = width;
+            canvas.height = height;
+            context = canvas.getContext('2d');    
+            drawCircle()        
+        }
+        function drawCircle(){
+            context.clearRect(0,0,width,height)
+            context.beginPath()
+            context.arc(circleObj.x, circleObj.y, circleObj.r,0,2*Math.PI);
+            context.stroke();
+        }
+        canvas.onmousedown = function(event){          
+            if(request_animation){
+                cancelAnimationFrame(request_animation)
+            }
+            context.beginPath()
+            context.arc(circleObj.x, circleObj.y, circleObj.r,0,2*Math.PI);
+            if(context.isPointInPath(event.offsetX,event.offsetY)){
+                 
+                beginX = startX = event.offsetX;
+                beginY = startY = event.offsetY;
+                move = true;
+                beginTime = +new Date()
+            }
+        }
+        canvas.onmousemove = function(event){
+            if(!move){
+                return
+            }
+            let disX = startX-event.offsetX;
+            let disY = startY-event.offsetY;
+            circleObj.x = circleObj.x - disX;
+            circleObj.y = circleObj.y - disY;
+            drawCircle();
+            startX = event.offsetX;
+            startY = event.offsetY;
+        }
+        canvas.onmouseup = function(event){
+            if(!move){
+                return
+            }
+            move = false;
+            endTime = +new Date()
+            caluSpeed(event.offsetX,event.offsetY)
+        }   
+        canvas.onmouseleave = function(event){
+            if(!move){
+                return
+            }
+            move = false;
+            endTime = +new Date()
+            caluSpeed(event.offsetX,event.offsetY)
+        }   
+
+        function caluSpeed(endX,endY){
+            let dis = Math.sqrt(Math.pow(Math.abs(beginX-endX),2) + Math.pow(Math.abs(beginY-endY),2)) 
+            let disTime = endTime-beginTime
+            if(dis/disTime>=0.3){
+                circleObj.disX =(endX-beginX)/disTime*2;
+                circleObj.disY = (endY-beginY)/disTime*2;
+                animation()
+            }
+        }
+
+        function animation(){
+            // debugger
+            let r = circleObj.r;
+            circleObj.x = circleObj.x + circleObj.disX;
+            circleObj.y = circleObj.y + circleObj.disY;
+
+            if(circleObj.x-r<=0){
+                circleObj.disX = -circleObj.disX
+                circleObj.x = r;
+            }
+            if(circleObj.x+r>=width){
+                circleObj.disX = -circleObj.disX;
+                circleObj.x = width-r
+            }
+            if(circleObj.y-r<=0){
+                circleObj.disY = -circleObj.disY;
+                circleObj.y = r;
+            }
+            if(circleObj.y+r>=height){
+                circleObj.disY = -circleObj.disY;
+                circleObj.y = height-r;
+            }
+
+            drawCircle()
+            request_animation = requestAnimationFrame(animation)
+        }
+    </script>
+</body>
+</html>

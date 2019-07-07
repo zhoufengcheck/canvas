@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <canvas id="canvas" style="border:1px solid red"></canvas>
+    </div>
+    <script>
+        var canvas = document.querySelector('#canvas')
+        canvas.width = 500;
+        canvas.height = 500
+        var context = canvas.getContext('2d')
+        drawXaxis(context,{x:30,y:300.5},{x:420,y:300.5},100,0,5)
+        drawYaxis(context,{x:30.5,y:300},{x:30.5,y:10},100,0,5)
+        function drawXaxis(ctx,begin,end,max,min,splitnum){
+            ctx.moveTo(begin.x,begin.y)
+            ctx.lineTo(end.x,end.y)  
+            ctx.stroke();
+            let num = (max-min)/splitnum; //切割成多少段
+            let unitLength = Math.abs(end.x-begin.x)/num;  //每段多长
+            ctx.textAlign="center"
+            ctx.textBaseline="top"
+            for(let i = 0; i<=num; i++){
+                let width = i*unitLength+begin.x;
+                ctx.beginPath()
+                if(i==0){
+                    ctx.strokeText(i*splitnum,width,begin.y+10)
+                    continue;
+                }
+                if(i%5==0){
+                    ctx.moveTo(width,begin.y-7);
+                    ctx.lineTo(width,begin.y+7);  
+                    ctx.strokeText(i*splitnum,width,begin.y+10)
+                }else{
+                    ctx.moveTo(width,begin.y-5)
+                    ctx.lineTo(width,begin.y+5)
+
+                    
+                }   
+                ctx.stroke()
+            }
+        }
+
+
+        function drawYaxis(ctx,begin,end,max,min,splitnum){
+            ctx.moveTo(begin.x,begin.y)
+            ctx.lineTo(end.x,end.y)  
+            ctx.stroke();
+
+
+            let num = (max-min)/splitnum; //切割成多少段
+            let unitLength = (end.y-begin.y)/num;  //每段多长
+            ctx.textAlign="right"
+            ctx.textBaseline="middle"
+            for(let i = 1; i<=num; i++){
+                let height = begin.y+i*unitLength;
+            
+                ctx.beginPath()
+                
+
+               
+                if(i%5==0){
+                    ctx.moveTo(begin.x-7,height);
+                    ctx.lineTo(begin.x+7,height);
+                    
+                    ctx.strokeText(i*splitnum,begin.x-10,height)
+                }else{
+                    ctx.moveTo(begin.x-5,height)
+                    ctx.lineTo(begin.x+5,height)      
+                }   
+                ctx.stroke()
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+<style type="text/css">
+    *{padding: 0;margin:0;}
+
+    #div1{margin:50px auto; width:300px; height: 300px;}
+    canvas{border: 1px solid red}
+</style>
+
+</head>
+<body>
+    <div id="div1">
+        <input type="checkbox" id="checkbox">编辑</input>
+        <canvas id="myCanvas"></canvas>
+    </div>
+    <script src="../utils/polygon.js"></script>
+    <script type="text/javascript">
+    let isMove = false;
+    let isDown = false;
+    let canvas = null;
+    let canvasImgData = null;
+    let startX = 0;
+    let startY = 0;
+    let endX = 0;
+    let endY = 0;
+    let polygons = [];
+    let isDrag = false;
+    let movingPolygon = null;
+    window.onload = function(){
+        canvas = document.getElementById('myCanvas');
+        let ctx=canvas.getContext("2d");
+        canvas.width = 500
+        canvas.height = 500
+        addEvent(canvas,false,ctx)
+        
+
+        let checkbox = document.getElementById('checkbox')
+        checkbox.onchange = function(event){
+            addEvent(canvas,event.target.checked,ctx)
+        }
+    };
+
+    function addEvent(canvas,edit,ctx) {
+        if(!edit){
+            canvas.onmousedown=(event)=>{
+                canvasMouseDown(ctx,event)
+            }
+            canvas.onmousemove=(event)=>{
+                canvasMouseMove(ctx,event)
+            }
+            canvas.onmouseup=(event)=>{
+                drawLineOver(ctx,event)
+            }
+            canvas.onmouseleave=(event)=>{
+                drawLineOver(ctx,event)
+            }
+        }else{
+            canvas.onmousedown=(event)=>{
+                for(let i = 0 ;i<polygons.length; i++){
+                    let item = polygons[i]  
+                    startX = event.offsetX;
+                    startY = event.offsetY;
+                    item.drawPolygon(ctx,true)
+                    if (ctx.isPointInPath(startX, startY)) {
+                        isDrag = true;
+                        movingPolygon = item;
+
+                        //清屏，我们把不移动的多边形线画出来，然后保存Image，再画上移动的多边形
+                        //在canvas.onmousemove的时候就可以只重新绘制移动的那个
+                        ctx.clearRect(0,0,canvas.width,canvas.height)
+                        polygons.forEach(polygon=>{
+                            if(polygon.id != item.id){
+                                polygon.drawPolygon(ctx,false)
+                            }
+                        })
+                        canvasImgData =ctx.getImageData(0,0,canvas.width,canvas.height)
+
+                        movingPolygon.drawPolygon(ctx,false)
+                        return
+                    }else{
+                        isDrag = false;
+                        movingPolygon = null
+                    }
+                }
+            }
+            canvas.onmousemove=(event)=>{
+                let dis_x = event.offsetX-startX
+                let dis_y = event.offsetY-startY
+                startX = event.offsetX;
+                startY = event.offsetY;
+                if(isDrag && movingPolygon){
+                    movingPolygon.centerX = movingPolygon.centerX + dis_x
+                    movingPolygon.centerY= movingPolygon.centerY + dis_y
+                    ctx.putImageData(canvasImgData,0,0);
+                    movingPolygon.drawPolygon(ctx,false)
+                   
+                }
+            }
+            canvas.onmouseup=(event)=>{
+                if(isDrag && movingPolygon){ 
+                    ctx.putImageData(canvasImgData,0,0);
+                    movingPolygon.drawPolygon(ctx,false)
+                    isDrag = false;
+                    movingPolygon = null
+                }
+            }
+            canvas.onmouseleave = canvas.onmouseup
+        }   
+    }
+
+    function canvasMouseDown (ctx,event){
+        startX = event.offsetX;
+        startY = event.offsetY
+        isDown = true;
+        canvasImgData = ctx.getImageData(0,0,canvas.width,canvas.height);
+    }
+
+    function canvasMouseMove (ctx,event){
+        if(!isDown){
+            return
+        }
+        isMove = true;
+        endX = event.offsetX;
+        endY = event.offsetY;
+        ctx.putImageData(canvasImgData,0,0);
+
+        let r = Math.sqrt(Math.pow(event.offsetX-startX,2)+ Math.pow(event.offsetY-startY,2))
+        let polygon = new Polygon(5,startX,startY,r,{startAngle:30})
+        polygon.drawPolygon(ctx,false);
+        polygon = null;
+
+
+    }
+
+    function drawLineOver(ctx,event){
+        if(!isMove){
+            isDown = false;
+            return;
+        }
+        ctx.putImageData(canvasImgData,0,0);
+        if(!(startX == endY && startY == endY)){
+            let r = Math.sqrt(Math.pow(event.offsetX-startX,2)+ Math.pow(event.offsetY-startY,2))
+            let polygon = new Polygon(5,startX,startY,r,{startAngle:30})
+            polygon.drawPolygon(ctx,false)
+            polygons.push(polygon)
+            polygon = null
+        }
+        isMove = false;
+        isDown = false;
+    }
+
+    </script>
+</body>
+</html>

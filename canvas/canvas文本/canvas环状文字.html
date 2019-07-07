@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div>
+        <canvas id="canvas" style="border:1px solid red;width:500px;height:500px"></canvas>
+    </div>
+    <script>
+        let canvas = document.getElementById('canvas')
+        let context = canvas.getContext('2d')
+        canvas.width = 500;
+        canvas.height = 500
+        context.font = "85px Comic-sans"
+        context.textAlign = "center"
+        context.textBaseline = "middle"
+
+
+        drawCircleText(context, "the word is circle ", { x: 250, y: 250 }, 200)
+        function drawCircleText(ctx, text, center, radius) {
+            let wordUnitAngle = 360 / text.length
+            for (let i = 0; i < text.length; i++) {
+                context.save()
+
+                let deg = i * wordUnitAngle
+                console.log(deg)
+                let x = radius * Math.sin(deg / 180 * Math.PI) + center.x;
+                let y = center.y - radius * Math.cos(deg / 180 * Math.PI);
+                console.log(x, y, text.charAt(i))
+                context.translate(x, y)
+                context.rotate(deg / 180 * Math.PI)
+                // context.translate(x*-1,y*-1)
+                context.strokeText(text.charAt(i), 0, 0)
+                context.restore()
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id = "canvas" style="border: 1px solid red"></canvas>
+    <script>
+        let context = null
+        let canvas = null;
+        let width = 1024;
+        let height = 512;
+        let img = null;
+        let move = 100;
+        let lastTime = 0
+        window.onload = function(){
+            canvas = document.getElementById('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            context = canvas.getContext('2d');
+
+            img = new Image();
+            img.src = "sky.png";
+            img.onload = function(){
+                // context.drawImage(img,0,0)
+                animate()
+            }
+            
+        }
+        function draw(){
+            context.save();
+            move = move>=width?0:move+1
+            context.translate(-move, 0);
+
+            context.drawImage(img, 0, 0);
+            context.drawImage(img, img.width-1, 0);
+
+            context.restore();
+        }
+        function animate() { 
+            let now = +new Data()
+            context.clearRect(0,0,width,height)
+            draw();
+            requestAnimationFrame(animate);
+        }
+    </script>
+</body>
+</html>

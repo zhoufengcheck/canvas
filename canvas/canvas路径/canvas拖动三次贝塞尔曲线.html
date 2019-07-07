@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+<style type="text/css">
+*{padding: 0;margin:0;}
+
+#div1{margin:50px auto; width:300px; height: 300px;}
+canvas{border: 1px solid red}
+</style>
+<script type="text/javascript">
+let isMove = false;
+let isDown = false;
+let canvas = null;
+let canvasImgData = null;
+let startX = 0;
+let startY = 0;
+let endX = 0;
+let endY = 0;
+let besizeList = [];
+let drawingNow = null;
+let edit = null;
+window.onload = function(){
+    canvas = document.getElementById('myCanvas');
+    canvas.width = 500
+    canvas.height = 500
+
+    let ctx=canvas.getContext("2d");
+    canvas.addEventListener('mousedown',(event)=>{
+        canvasMouseDown(ctx,event)
+    }) 
+    canvas.addEventListener('mousemove',(event)=>{
+        canvasMouseMove(ctx,event)
+    }) 
+    canvas.addEventListener('mouseup',(event)=>{
+        drawLineOver(ctx,event)
+    }) 
+    canvas.addEventListener('mouseleave',(event)=>{
+        drawLineOver(ctx,event)
+    })
+};
+
+function canvasMouseDown (ctx,event){
+    startX = event.offsetX;
+    startY = event.offsetY
+    isDown = true;
+    canvasImgData = ctx.getImageData(0,0,canvas.width,canvas.height);
+
+    if(drawingNow){
+        edit = null;
+        for(let key in drawingNow){
+            let item = drawingNow[key];
+            ctx.beginPath()
+            ctx.arc(item.x,item.y,5,-0,2*Math.PI)
+            if(ctx.isPointInPath(event.offsetX, event.offsetY)){
+                edit = item;
+            }
+        }
+    }
+}
+
+function canvasMouseMove (ctx,event){
+
+    if(!isDown){
+        return
+    }
+
+    if(edit){
+       edit.x = event.offsetX;
+       edit.y = event.offsetY;
+       ctx.clearRect(0,0,canvas.width,canvas.height)
+        besizeList.forEach(item=>{
+            ctx.beginPath()
+            ctx.moveTo(item.beginPoint.x,item.beginPoint.y)
+            ctx.bezierCurveTo(item.controlPoint1.x, item.controlPoint1.y, item.controlPoint2.x, item.controlPoint2.y, item.endPoint.x, item.endPoint.y)
+            ctx.stroke()
+            if(item.id == drawingNow.id){
+                drawCircle2(ctx,item)
+            }
+            
+        })
+    }
+    else if(!edit && drawingNow){
+        return
+    }
+    else{
+        isMove = true;
+        endX = event.offsetX;
+        endY = event.offsetY;
+        ctx.putImageData(canvasImgData,0,0);
+
+        ctx.beginPath();
+        ctx.moveTo(startX,startY)
+        ctx.bezierCurveTo(event.offsetX, startY, startX, event.offsetY, event.offsetX, event.offsetY)
+        ctx.stroke()
+        drawCircle(ctx,startX,startY,event.offsetX,event.offsetY)
+    }
+    
+}
+function drawCircle2(ctx,obj){
+    let r = 5;
+    ctx.beginPath();
+    ctx.fillStyle="blue"
+    ctx.arc(obj.beginPoint.x,obj.beginPoint.y,r,0,2*Math.PI);
+    ctx.arc(obj.endPoint.x,obj.endPoint.y,r,0,2*Math.PI);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.fillStyle="yellow"
+    ctx.arc(obj.controlPoint1.x,obj.controlPoint1.y,r,0,2*Math.PI);
+    ctx.arc(obj.controlPoint2.x,obj.controlPoint2.y,r,0,2*Math.PI);
+    ctx.fill();
+}
+function drawCircle (ctx,startX,startY,endX,endY){
+    let r = 5;
+    ctx.beginPath();
+    ctx.fillStyle="blue"
+    ctx.arc(startX,startY,r,0,2*Math.PI);
+    ctx.arc(endX,endY,r,0,2*Math.PI);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.fillStyle="yellow"
+    ctx.arc(endX,startY,r,0,2*Math.PI);
+    ctx.arc(startX,endY,r,0,2*Math.PI);
+    ctx.fill();
+}
+
+function drawLineOver(ctx,event){
+    if(!edit && drawingNow){
+        ctx.clearRect(0,0,canvas.width,canvas.height)
+        besizeList.forEach(item=>{
+            ctx.beginPath()
+            ctx.moveTo(item.beginPoint.x,item.beginPoint.y)
+            ctx.bezierCurveTo(item.controlPoint1.x, item.controlPoint1.y, item.controlPoint2.x, item.controlPoint2.y, item.endPoint.x, item.endPoint.y)
+            ctx.stroke()
+        })
+        drawingNow = null;
+        edit = null;
+        isMove = false;
+        isDown = false;
+        return
+    }
+
+    if(!isMove){
+        isMove = false;
+        isDown = false;
+        return;
+    }
+
+
+    ctx.putImageData(canvasImgData,0,0);
+    if(!(startX == endY && startY == endY)){
+        ctx.beginPath();
+        ctx.moveTo(startX,startY)
+        ctx.bezierCurveTo(event.offsetX, startY, startX, event.offsetY, event.offsetX, event.offsetY)
+        ctx.stroke()
+        drawCircle(ctx,startX,startY,event.offsetX,event.offsetY)
+        
+        let id = besizeList.length==0 ? 0 : (besizeList[besizeList.length-1].id+1)
+
+        drawingNow = {
+            id:id,
+            beginPoint:{x:startX,y:startY},
+            controlPoint1:{x:endX,y:startY},
+            controlPoint2:{x:startX,y:endY},
+            endPoint:{x:endX,y:endY}
+        }
+
+        besizeList.push(drawingNow)
+    }
+    isMove = false;
+    isDown = false;
+}
+</script>
+</head>
+<body>
+    <div id="div1">
+        <canvas id="myCanvas"></canvas>
+    </div>
+</body>
+</html>

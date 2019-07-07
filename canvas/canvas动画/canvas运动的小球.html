@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id = "canvas" style="border: 1px solid red"></canvas>
+    <script>
+        let context = null
+        let circleList = [
+            {x:100,y:200,r:20,style:{fillStyle:"#fcfede"},dirX:1,dirY:1},
+            {x:200,y:340,r:25,style:{fillStyle:"#fedede"},dirX:-1,dirY:1},
+            {x:400,y:240,r:35,style:{fillStyle:"#defede"},dirX:1,dirY:-1},
+            {x:300,y:200,r:35,style:{fillStyle:"#decede"},dirX:-1,dirY:-1},
+        ]
+        let canvas = null;
+        let width = 500;
+        let height = 500
+        window.onload = function(){
+            canvas = document.getElementById('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            context = canvas.getContext('2d');
+
+            circleList.forEach((item)=>{
+                drawCircle(item.x,item.y,item.r,item.style)
+            })
+            window.requestAnimationFrame(moveCircle)
+        }
+        function drawCircle(x,y,r,style={}){
+            context.beginPath()
+            context.fillStyle = style.fillStyle || "";
+            context.strokeStyle = style.strokeStyle||"";
+            context.arc(x,y,r,0,2*Math.PI);
+            context.fill();
+        }
+
+        function moveCircle(){
+            circleList.forEach((item)=>{
+                let r = item.r;
+                if(item.x-r<=0 || item.x+r>=width){
+                    item.dirX = item.dirX*-1;
+                }
+                if(item.y-r<=0 || item.y+r>=width){
+                    item.dirY = item.dirY*-1;
+                }
+                
+                item.x = item.x + item.dirX;
+                item.y = item.y + item.dirY;
+            })
+
+            context.clearRect(0,0,width,height)
+            circleList.forEach((item)=>{
+                drawCircle(item.x,item.y,item.r,item.style)
+            })
+            window.requestAnimationFrame(moveCircle)
+        }
+    </script>
+</body>
+</html>

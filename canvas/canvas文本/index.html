@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <canvas id="canvas" style="border:1px solid red"></canvas>
+    </div>
+    <script>
+        var canvas = document.querySelector('#canvas')
+        canvas.width = 500;
+        canvas.height = 500
+        var context = canvas.getContext('2d')
+
+        context.font = "120px Comic-sans"
+        context.lineWidth=1.0
+        context.fillRect(100,200,10,10)
+        context.moveTo(100,200)
+        context.lineTo(500,200)
+        context.stroke()
+
+
+
+        let gradient = context.createLinearGradient(100,200,500,200)
+        gradient.addColorStop(0,'red');
+        gradient.addColorStop(0.25,'#DD5E89');
+        gradient.addColorStop(0.5,'#f7bb97');
+        gradient.addColorStop(0.75,'#DD5E89');
+        gradient.addColorStop(1,'#f7bb97')
+
+        context.beginPath()
+        context.textAlign = "left"
+        context.textBaseline = "top"
+        context.fillStyle = gradient;
+        context.fillText("html",100,200);
+        context.strokeStyle = 'blue';
+        context.strokeText("html",100,200)
+        console.log(context.measureText('html'))
+
+       
+    </script>
+</body>
+</html>

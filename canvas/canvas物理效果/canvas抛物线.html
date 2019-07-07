@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .mess{
+            overflow: hidden;
+            margin-bottom: 20px;
+            width: 800px;
+
+        }
+        .dir{
+            width: 150px;
+            height: 40px;
+            text-align: center;
+            background: #ddd;
+            float: right;
+            font-size: 12px;
+            margin-left: 10px;
+            line-height: 40px
+        }
+        .score{
+            width: 100px;
+            height: 40px;
+            text-align: center;
+            line-height: 40px;
+            background: #ddd;
+            float: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="mess">
+        <div class="score" id = "score">0</div>
+        <div class="dir" id = "velocity">
+            发射速度:
+        </div>
+        <div class="dir" id = "degree">
+            发射角度:
+        </div>
+    </div>
+    <div>
+        <canvas id="canvas" style="border:1px solid red;background: #dfdfdd"></canvas>
+    </div>
+</body>
+<script src="../shared/js/stopwatch.js"></script>
+<script src="../shared/js/animationTimer.js"></script>
+<script src="../shared/js/sprites.js"></script>
+<script>
+    const canvas = document.getElementById('canvas');
+    canvas.height = 450;
+    canvas.width = 800;
+    const context = canvas.getContext('2d');
+
+    //常量，不变的数据配置
+    const constantData={
+        GRAVITY_FORCE:9.81,
+        pxForMeter:canvas.width/10,
+    }
+
+
+    const animationObj = new AnimationTimer()
+    let lastTime = 0
+    let fps = 60;
+    let launchAngle = 0;
+    let launchVelocity = 0;
+    let launchVelocityOutput =document.getElementById('velocity')
+    let launchAngleOutput =document.getElementById('degree')
+    let scoreShow = document.getElementById('score')
+    let score = 0;
+    let threePointer = false;
+
+
+
+    let initCanvasObj = {
+        initBucket:function(){
+            const catchBall = {
+                ballInBucket: function() {
+                    return ball.left > bucket.left + bucket.width/2 &&
+                            ball.left < bucket.left + bucket.width   &&
+                            ball.top > bucket.top && ball.top < bucket.top + bucket.height/3;
+                },
+                adjustScore: function() {  
+                    score  = threePointer?score+3:score+2
+                    scoreShow.innerHTML = score;
+                },
+                
+                execute: function (bucket, context, time) {
+                    if (animationObj.isRunning() && this.ballInBucket()) {
+                        this.adjustScore();
+                        initCanvasObj.reset();
+                    }
+                }
+            }
+            const bucketImage = new Image()
+            const bucket = new Sprite('bucket',{
+                paint: function(sprite, context) {
+                    context.beginPath();
+                    context.drawImage(bucketImage,sprite.left,sprite.top,sprite.width,sprite.height)
+                }
+            },[catchBall])
+            bucketImage.src = '../shared/images/bucket.png';
+            bucketImage.onload = function (e) {
+                bucket.left = 668;
+                bucket.top = canvas.height - 100;
+                bucket.width = bucketImage.width;
+                bucket.height = bucketImage.height;
+                requestAnimationFrame(animation)
+            };
+            return bucket
+        },
+        initBall:function(){
+            const ballMove = {
+                updateVeloctity:function(){
+                    let elapsed = animationObj.getRealElapsedTime()/1000
+                    ball.velocityY = (constantData.GRAVITY_FORCE * elapsed) -
+                                (launchVelocity * Math.sin(launchAngle));
+
+                },
+                checkForThreePointer: function () {
+                    if (ball.top < 0) {
+                        threePointer = true;
+                    }
+                },
+                updateBallPosition:function(){
+                    ball.left += ball.velocityX /fps * constantData.pxForMeter;
+                    ball.top += ball.velocityY /fps * constantData.pxForMeter;
+                },
+                checkBallBounds: function () {
+                    if (ball.top > canvas.height || ball.left > canvas.width)  {
+                        initCanvasObj.reset();
+                    }
+                },
+                execute:function(sprite,context,time){
+                    if(animationObj.isRunning()){
+                        this.updateVeloctity();
+                        this.updateBallPosition();
+                        this.checkBallBounds();
+                        this.checkForThreePointer()
+                    } 
+                }
+            }
+            const ball = new Sprite('ball',
+                {
+                    paint: function(sprite, context) {
+                        context.beginPath();
+                        context.arc(sprite.left,
+                                    sprite.top,
+                                    sprite.painter.radius, 0, Math.PI*2, false);
+
+                        context.lineWidth = 2;
+                        context.strokeStyle = 'rgb(100,100,195)';
+                        context.fillStyle = 'rgba(30,144,255,0.15)';
+                        context.fill();
+                        context.stroke();
+                    },
+                    radius:10,
+                },
+                [ballMove]
+            ); 
+            ball.left = 40;
+            ball.top = canvas.height-70;
+            ball.velocityY = 0;
+            ball.velocityX = 0;
+            return ball;
+        },
+        reset:function(){
+            animationObj.stop();
+            ball.left = 40;
+            ball.top = canvas.height-70;
+            ball.paint(context)
+            threePointer = false;
+        }
+        
+    }
+
+    const ball = initCanvasObj.initBall()
+    const bucket = initCanvasObj.initBucket()
+    
+    let lineEndX = ball.left;
+    let lineEndY = ball.top;
+
+
+
+
+    function calculateFps(time) {
+        var fps = 1000 / (time - lastTime);
+        lastTime = time;
+        return fps; 
+    }
+    function animation(time){
+        fps = calculateFps(time);
+        context.clearRect(0,0,canvas.width,canvas.height)
+        if(!animationObj.isRunning()){  
+            context.beginPath()
+            context.moveTo(ball.left,ball.top);
+            context.lineTo(lineEndX,lineEndY)
+            context.stroke()
+            context.closePath()
+        }
+        bucket.update(context)
+        ball.update(context,time);
+        bucket.paint(context)
+        ball.paint(context)
+        requestAnimationFrame(animation)
+    }
+
+    canvas.onmousemove = function(event){
+        lineEndX = event.offsetX;
+        lineEndY = event.offsetY;
+        let deltaX = Math.abs(event.offsetX - ball.left);
+        let deltaY = Math.abs(event.offsetY - ball.top);
+        launchAngle = Math.atan(parseFloat(deltaY) / parseFloat(deltaX));
+        launchVelocity = 4 * deltaY / Math.sin(launchAngle) / constantData.pxForMeter;
+
+        launchVelocityOutput.innerHTML = `发射速度:${launchVelocity.toFixed(2)}`;
+        launchAngleOutput.innerHTML = `发射角度${(launchAngle * 180/Math.PI).toFixed(2)}`;
+    }
+    
+    canvas.onmousedown = function(event){
+        if ( !animationObj.isRunning()) {
+            ball.velocityX = launchVelocity * Math.cos(launchAngle);
+            ball.velocityY = launchVelocity * Math.sin(launchAngle);
+            animationObj.start()
+        }
+    }
+
+</script>
+</html>

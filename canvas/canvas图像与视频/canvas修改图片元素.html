@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <canvas id = "canvas" style="border: 1px solid red"></canvas>
+        <button class="stylebtn" type="style0Data">原图</button>
+        <button class="stylebtn" type="style1Data">负片过滤</button>
+        <button class="stylebtn" type="style2Data">黑白滤镜</button>
+        <button class="stylebtn" type="style3Data">浮雕效果</button>
+        <button class="stylebtn" type="style4Data">墨镜效果</button>
+    </div>
+    <script>
+        initBtn()
+        
+        let canvas = document.getElementById('canvas');
+        let context = canvas.getContext('2d');
+        canvas.width = 800;
+        canvas.height = 600;
+        let baseImageData = null;
+
+
+        let img = new Image()
+        // img.src = "waterfall.png";
+        img.crossOrigin = 'anonymous';
+        img.src="http://k.zol-img.com.cn/sjbbs/7692/a7691515_s.jpg"
+        img.onload = function(){
+            console.log(img)
+            context.drawImage(img,0,0,800,600);
+            baseImageData = context.getImageData(0,0,800,600)
+        }
+        sunglassFilter = new Worker('work.js');
+
+        styleChage = {
+            style0Data:function(){
+                context.putImageData(baseImageData,0,0)
+            },
+            style1Data:function(){
+                context.putImageData(baseImageData,0,0)
+                let imageData = context.getImageData(0,0,800,600);
+                data = imageData.data
+                for(let i = 0;i<data.length-4;i+=4){
+                    data[i] = 255-data[i]
+                    data[i+1] = 255-data[i+1]
+                    data[i+2] = 255-data[i+2]
+                }
+                context.putImageData(imageData,0,0)
+            },
+            style2Data:function(){
+                context.putImageData(baseImageData,0,0)
+                let imageData = context.getImageData(0,0,800,600);
+                data = imageData.data
+                for(let i = 0;i<data.length-4;i+=4){
+                    let aver = (data[i]+data[i+1]+data[i+2])/3
+                    data[i] = aver
+                    data[i+1] = aver
+                    data[i+2] = aver
+                }
+                context.putImageData(imageData,0,0)
+            },
+            copyImageData: function(src)
+            {
+                var dst = context.createImageData(src.width, src.height);
+                dst.data.set(src.data);
+                return dst;
+            },
+
+            style3Data: function() {  
+                //浮雕效果的原理就加大元素与左右两边的差距。    
+                context.putImageData(baseImageData,0,0)
+                let canvasData = context.getImageData(0,0,800,600)
+                let tempCanvasData = styleChage.copyImageData(canvasData);
+
+                for ( var x = 1; x < tempCanvasData.width-1; x++) 
+                {    
+                    for ( var y = 1; y < tempCanvasData.height-1; y++)
+                    {    
+            
+                        // Index of the pixel in the array    
+                        var idx = (x + y * tempCanvasData.width) * 4;       
+                        var bidx = ((x-1) + y * tempCanvasData.width) * 4;
+                        var aidx = ((x+1) + y * tempCanvasData.width) * 4;
+                        
+                        // calculate new RGB value
+                        var nr = tempCanvasData.data[aidx + 0] - tempCanvasData.data[bidx + 0] + 100;
+                        var ng = tempCanvasData.data[aidx + 1] - tempCanvasData.data[bidx + 1] + 100;
+                        var nb = tempCanvasData.data[aidx + 2] - tempCanvasData.data[bidx + 2] + 100;
+                        nr = (nr < 0) ? 0 : ((nr >255) ? 255 : nr);
+                        ng = (ng < 0) ? 0 : ((ng >255) ? 255 : ng);
+                        nb = (nb < 0) ? 0 : ((nb >255) ? 255 : nb);
+                        
+                        // assign new pixel value    
+                        canvasData.data[idx + 0] = nr; // Red channel    
+                        canvasData.data[idx + 1] = ng; // Green channel    
+                        canvasData.data[idx + 2] = nb; // Blue channel    
+                        canvasData.data[idx + 3] = 255; // Alpha channel    
+                    }
+                }
+                context.putImageData(canvasData,0,0)
+            },
+
+
+            style4Data:function(){
+                context.putImageData(baseImageData,0,0)
+                //worker.postMessage()方法的参数，就是主线程传给 Worker 的数据
+                sunglassFilter.postMessage(context.getImageData(0, 0, canvas.width, canvas.height));
+
+                //主线程通过worker.onmessage指定监听函数
+                sunglassFilter.onmessage = function (event) {
+                    console.log(event)
+                    context.putImageData(event.data, 0, 0);
+                };
+                //主线程通过worker.onmessage指定监听函数
+                sunglassFilter.onchange = function (event) {
+                console.log(event)
+                };
+            }
+        }
+        
+        function initBtn(){
+            let btn =[...document.getElementsByClassName('stylebtn')]
+            console.log(btn)
+            btn.forEach(item => {
+                item.onclick = function(event){
+                    let type = item.getAttribute('type')
+                    if(styleChage[type]){
+                        context.clearRect(0,0,canvas.width,canvas.height)
+                        styleChage[type]()
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

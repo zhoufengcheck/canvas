@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <button id="button">下落</button>
+        <button id="button1">停止</button>
+    </div>
+    <div>
+        <canvas id="canvas" style="border:1px solid red"></canvas>
+    </div>
+</body>
+<script src="../shared/js/stopwatch.js"></script>
+<script src="../shared/js/animationTimer.js"></script>
+<script src="../shared/js/sprites.js"></script>
+<script>
+    const canvas = document.getElementById('canvas');
+    canvas.height = 500;
+    canvas.width = 500;
+    const context = canvas.getContext('2d');
+
+    let GRAVITY_FORCE =9.81;
+    const PLATFORM_HEIGHT_IN_METERS = 10; // 10 meters
+    const pixelsPerMeter = (canvas.height - 10) /   //每米表示多少个像素
+                      PLATFORM_HEIGHT_IN_METERS
+
+    let lastTime = 0;
+    let fps = 60;
+
+
+    let moving = false;
+    const animationObj = new AnimationTimer()
+    const ballMove = {
+        execute:(sprite,context,time)=>{
+            if(animationObj.isRunning()){
+                sprite.left -= sprite.velocityX / fps // 此时速度（1秒移动的像素） / 1秒的帧数 = 每帧移动的像素
+                sprite.top += sprite.velocityY / fps;
+
+                //此时的速度
+                sprite.velocityY = GRAVITY_FORCE *(animationObj.getElapsedTime()/1000) * pixelsPerMeter; 
+                if(sprite.top>canvas.height || sprite.left<0){
+                    animationObj.stop()
+                }
+            }    
+        }
+    }
+    const ball = new Sprite('ball',
+        {
+            paint: function(sprite, context) {
+                context.beginPath();
+                context.arc(sprite.left + sprite.width/2,
+                            sprite.top + sprite.height/2,
+                            ball.radius, 0, Math.PI*2, false);
+
+                context.lineWidth = 2;
+                context.strokeStyle = 'rgb(100,100,195)';
+                context.fillStyle = 'rgba(30,144,255,0.15)';
+                context.fill();
+                context.stroke();
+            }
+        },
+        [ballMove]
+    );
+
+   
+    ball.left = 440;
+    ball.top = 50;
+    ball.velocityY = 0;
+    ball.velocityX = 110;
+    ball.radius = 30
+    ball.paint(context);
+    
+
+
+    let button = document.getElementById('button')
+    button.onclick = function(){
+        ball.left = 440;
+        ball.top = 50;
+        animationObj.start()
+    }
+
+    let button1 = document.getElementById('button1')
+    button1.onclick = function(){
+        animationObj.stop()
+    }
+
+    function calculateFps(time) {
+        var fps = 1000 / (time - lastTime);
+        lastTime = time;
+        return fps; 
+    }
+    function animation(time){
+        fps = calculateFps(time);
+        context.clearRect(0,0,canvas.width,canvas.height)
+        ball.update();
+        ball.paint(context)
+        requestAnimationFrame(animation)
+    }
+    animation()
+    
+
+
+</script>
+</html>

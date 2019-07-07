@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    .content{
+        width: 400px;
+        height: 300px;
+        overflow: hidden;
+        position: relative
+    }
+    #table-content{
+        width: 100%;
+        height: 100%;
+        overflow:auto;
+        position: relative
+    }
+    #table-content td{
+        padding: 0 10px
+    }
+    table{
+        min-width: 100%;
+    }
+    table td{
+        border-left: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+        height: 50px;
+        overflow: hidden;
+        text-align: center
+    }
+
+    td.oper{
+        padding: 0px !important;
+        width: 100px;
+        min-width: 100px;
+        max-width: 100px;
+        position:sticky;
+        right:0;
+        background: #fff;
+        border-right:1px solid #ccc;
+        
+    }
+    td.header{
+        position:sticky;
+        top: 0;
+        background: #fff;
+        border-top:1px solid #ccc
+    }
+    .opertd{
+        border:1px solid #ccc;
+        width: 100px;
+        min-width: 100px;
+        max-width: 100px;
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 50px;
+        line-height: 50px;
+        background: #fff;
+        z-index: 1;
+        text-align: center
+    }
+</style>
+<body>
+    <div class="content">
+            <div class="opertd">oper</div>
+        <div id="table-content">
+            <table cellspacing="0" cellpadding="0">
+                <thead>
+                    <tr>
+                        <td class="header">name</td>
+                        <td class="header">age</td>
+                        <td class="header">address</td>
+                        <td class="header">photo</td>
+                        <td class="header">email</td>
+                        <td class="oper">oper</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>feiage.aa</td><td>11</td><td>beijign changping</td><td>18602351793</td>
+                        <td>1198749116@qq.com</td><td class="oper">操作</td>
+                    </tr>
+                    <tr>
+                        <td>feiage.aa</td><td>22</td><td>beijign changping</td><td>18602351793</td>
+                        <td>1198749116@qq.com</td><td class="oper">操作</td>
+                    </tr>
+                    <tr>
+                        <td>feiage.aa</td><td>22</td><td>beijign changping</td><td>18602351793</td>
+                        <td>1198749116@qq.com</td><td class="oper">操作</td>
+                    </tr>
+                    <tr>
+                        <td>feiage.aa</td><td>22</td><td>beijign changping</td><td>18602351793</td>
+                        <td>1198749116@qq.com</td><td class="oper">操作</td>
+                    </tr>
+                    <tr>
+                        <td>feiage.aa</td><td>22</td><td>beijign changping</td><td>18602351793</td>
+                        <td>1198749116@qq.com</td><td class="oper">操作</td>
+                    </tr>
+                    <tr>
+                        <td>feiage.aa</td><td>22</td><td>beijign changping</td><td>18602351793</td>
+                        <td>1198749116@qq.com</td><td class="oper">操作</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+<script>   
+
+  
+</script>
+</html>

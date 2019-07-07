@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <p>离屏canvas，按某一点放大</p>
+    <canvas id="canvasResult" style="border: 1px solid red"></canvas>
+    <script>
+
+        let startX = 0,endX = 0;
+        let startY = 0,endY = 0;
+        let isDown = false
+        let path = {
+            centerX:190,
+            centerY:250,
+            r:100
+        }
+        let canvas=document.createElement('canvas')
+        canvas.width  = 800;
+        canvas.height = 600;
+        context = canvas.getContext('2d');
+
+        let canvasResult = document.getElementById('canvasResult')
+        canvasResult.width  = 800;
+        canvasResult.height = 600;
+        contextResult = canvasResult.getContext('2d');
+
+
+        let img = new Image()
+        img.src = "pic1.jpg";
+        img.onload = function(){
+            context.drawImage(img,0,0);
+            drawCircle(path)
+            copy()
+
+        }
+
+        function copy(){
+            let img = context.getImageData(0,0,canvas.width,canvas.height)
+            contextResult.putImageData(img,0,0)
+        }
+
+        function drawCircle(obj){
+            obj.r = 100
+            context.save()
+            context.beginPath()
+            context.shadowColor="#333";
+            context.shadowOffsetX=0;
+            context.shadowOffsetY=0;
+            context.shadowBlur=15;
+            context.lineWidth = 5;
+            context.strokeStyle="#eee"
+            context.arc(obj.centerX, obj.centerY, obj.r, 0, 2*Math.PI)
+            Object.assign(path,obj)
+            context.closePath()
+            context.stroke()
+            context.restore()
+            
+        }
+
+        canvasResult.onmousedown = function(event){
+            startX = event.offsetX
+            startY = event.offsetY
+            context.arc(path.centerX, path.centerY, path.r, 0, 2*Math.PI)
+            if(context.isPointInPath(startX,startY)){
+                isDown = true;
+            }
+        }
+
+        canvasResult.onmousemove= function(event){
+            if(!isDown){
+                return
+            }
+            let x = event.offsetX
+            let y = event.offsetY
+            let disX = x-startX;
+            let disY = y-startY;
+            let centerX = path.centerX+disX;
+            let centerY = path.centerY+disY;
+            context.clearRect(0,0,canvas.width,canvas.height);
+            context.drawImage(img,0,0);
+            drawCircle({centerX,centerY});
+            scale()
+            startX = x;
+            startY = y;
+            copy()
+        }
+
+
+        
+        canvasResult.onmouseup= function(event){
+            isDown = false;
+        }
+        
+
+        function scale(){
+            context.save();
+            context.beginPath()
+            context.arc(path.centerX, path.centerY, path.r, 0, 2*Math.PI)
+            context.clip();
+            let x = path.centerX*(-1)
+            let y = path.centerY*(-1)
+            let width = canvas.width*2;
+            let height = canvas.height*2
+            context.drawImage(img,x,y,width,height);
+            context.restore();
+        }
+    </script>
+</body>
+</html>

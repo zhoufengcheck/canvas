@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <canvas id = "canvas" style="border: 1px solid red"></canvas>
+        <button class="stylebtn" type="fadeIn">淡入</button>
+        <button class="stylebtn" type="fadeOut">淡出</button>
+    </div>
+    <script>
+        initBtn()
+        
+        let canvas = document.getElementById('canvas');
+        let context = canvas.getContext('2d');
+        canvas.width = 800;
+        canvas.height = 600;
+        let baseImageData = null;
+        let interval = ''
+
+
+        let img = new Image()
+        img.src = "waterfall.png";
+        img.onload = function(){
+            context.drawImage(img,0,0,800,600);
+            baseImageData = context.getImageData(0,0,800,600)
+        }
+     
+        let styleChage = {
+            fadeOut: function(imageData,interval){
+                let data = imageData.data;
+                for(let i=0; i<data.length-1; i+=4){
+                    data[i+3] = data[i+3]-2;
+                }
+                if(data[3]<=0 && interval){
+                    clearInterval(interval);
+                    interval == null
+                }
+                context.putImageData(imageData,0,0)
+            },
+            fadeIn:function(imageData,interval){  
+                let data = imageData.data;
+                for(let i=0; i<data.length-1; i+=4){
+                    data[i+3] = data[i+3]+2;
+                }
+                if(data[3]>=255 && interval){    
+                    clearInterval(interval);
+                    interval == null
+                }
+                context.putImageData(imageData,0,0)
+            }
+        }
+
+        function copyImageData(src){
+            var dst = context.createImageData(src.width, src.height);
+            dst.data.set(src.data);
+            return dst;
+        }
+
+        function initBtn(){
+            let btn =[...document.getElementsByClassName('stylebtn')]
+            btn.forEach(item => {
+                item.onclick = function(event){
+                    //
+                    clearInterval(interval);
+                    interval == null
+
+                    let type = item.getAttribute('type');
+                    if(styleChage[type]){
+                        if(type == "fadeOut"){
+                            let imageData = copyImageData(baseImageData)
+                            interval = setInterval(function(){
+                                styleChage[type](imageData,interval)
+                            },10)
+                        }
+                        if(type == "fadeIn"){
+                            context.clearRect(0,0,canvas.width,canvas.height)
+                            let imageData = copyImageData(baseImageData)
+                            let data = imageData.data;
+                            for(let i=0; i<data.length-1; i+=4){
+                                data[i+3] = 0;
+                            }
+                            interval = setInterval(function(){
+                                styleChage[type](imageData,interval)
+                            },10)
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

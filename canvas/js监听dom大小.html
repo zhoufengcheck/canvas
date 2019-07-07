@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            background: #e6e6e6;
+        }
+        .container {
+            position: relative;
+        }
+        #item-left{
+            position: absolute;
+            top: 50px;
+            left: 400px;
+            width: 200px;
+            height: 200px;
+            background: #2ecc71;
+        }
+        .controller {
+            position: absolute;
+            z-index: 1000;
+            bottom: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            border: 1px solid #fff;
+            background: #3498db;
+            cursor: se-resize;
+            font-size: 0px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="container-left">
+            <div id="item-left">
+                <div id="controller-left" class="controller"></div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+let left = document.getElementById('item-left')
+let controllerLeft = document.getElementById('controller-left')
+
+onelresize(left, function () {
+    //callback
+    console.log('change')
+})
+
+
+
+let isLeftMousedown = false
+let lastMouseX = 0
+let lastMouseY = 0
+
+document.addEventListener('mousemove', function (e) {
+  let el
+  if (isLeftMousedown) {
+    el = left
+  } else {
+    return
+  }
+
+  el.style.width = el.offsetWidth + e.clientX - lastMouseX + 'px'
+  el.style.height = el.offsetHeight + e.clientY - lastMouseY + 'px'
+
+  lastMouseX = e.clientX
+  lastMouseY = e.clientY
+})
+
+controllerLeft.addEventListener('mousedown', function (e) {
+  e.preventDefault()
+  lastMouseX = e.clientX
+  lastMouseY = e.clientY
+  isLeftMousedown = true
+  left.style.willChange = 'width,height'
+})
+document.addEventListener('mouseup', function () {
+  isLeftMousedown = false
+  left.style.willChange = ''
+})
+
+
+function onelresize (el, handler) {
+    //错误处理
+    if (!(el instanceof HTMLElement)) {
+        throw new TypeError("Parameter 1 is not instance of 'HTMLElement'.")
+    }
+    if (/^(area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr|script|style|textarea|title)$/i.test(el.tagName)) {
+        throw new TypeError('Unsupported tag type. Change the tag or wrap it in a supported tag(e.g. div).')
+    }
+    if (typeof handler !== 'function') { throw new TypeError("Parameter 2 is not of type 'function'.") }
+
+    let lastWidth = el.offsetWidth || 1;
+    let lastHeight = el.offsetHeight || 1;
+    const maxWidth = 10000 * (lastWidth);
+    const maxHeight = 10000 * (lastHeight);
+
+    let expand = document.createElement('div')
+    let expandChild = document.createElement('div')
+    expand.style.cssText = 'position:absolute;top:0;bottom:0;left:0;right:0;z-index=-10000;overflow:hidden;visibility:hidden;'    
+    let shrink = expand.cloneNode(false)
+    let shrinkChild = expandChild.cloneNode(false)
+
+    expandChild.style.width = maxWidth + 'px'
+    expandChild.style.height = maxHeight + 'px'
+    shrinkChild.style.width = '200%'
+    shrinkChild.style.height = '200%'
+
+    expand.appendChild(expandChild)
+    shrink.appendChild(shrinkChild)
+    el.appendChild(expand)
+    el.appendChild(shrink)
+
+    //offsetParent
+    //1:<body>元素的offsetParent是null
+    //2:元素自身无定位，且父元素也不存在定位，offsetParent为<body>元素
+    //3:元素自身无定位，且父元素存在定位，获取的是父辈（不是父亲哈）中距离最近的定位元素。
+    //4:元素自身定位是fixed。那么返回的是null。
+    if (expand.offsetParent !== el) {
+        el.style.position = 'relative'
+    }
+    expand.scrollTop = shrink.scrollTop = maxHeight
+    expand.scrollLeft = shrink.scrollLeft = maxWidth
+    console.log(shrink.scrollLeft)
+    let newWidth = 0
+    let newHeight = 0
+    function onScroll (e) {
+        newWidth = el.offsetWidth || 1
+        newHeight = el.offsetHeight || 1
+        if (newWidth !== lastWidth || newHeight !== lastHeight) {
+            lastWidth = newWidth
+            lastHeight = newHeight
+            requestAnimationFrame(handler)
+        }
+        // expand.scrollTop = shrink.scrollTop = maxHeight;
+        // expand.scrollLeft = shrink.scrollLeft = maxWidth;
+    }
+    expand.addEventListener('scroll', onScroll, false)
+    shrink.addEventListener('scroll', onScroll, false)
+}
+</script>
+</html>

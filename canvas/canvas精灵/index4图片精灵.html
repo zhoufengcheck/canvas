@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <button id="button">animation</button>
+        <canvas id="canvas" style="border:1px solid red"></canvas>
+    </div>
+</body>
+<script src="sprite.js"></script>
+<script>
+    const canvas = document.getElementById('canvas');
+    canvas.height = 500;
+    canvas.width = 500;
+    const context = canvas.getContext('2d');
+    let lastAdvance = 0;
+    const control_time = 100;
+     
+    let sprite = null;
+    let image = new Image();
+
+    
+    init()
+    let runInPlace = {
+       lastAdvance: 0,
+       PAGEFLIP_INTERVAL: 100,
+       execute: function (sprite, context, time) {
+            if (time - this.lastAdvance > this.PAGEFLIP_INTERVAL) {
+                sprite.painter.advance();
+                this.lastAdvance = time;
+            }
+       }
+    }
+
+    let moveLeftToRight = {
+        lastMove: 0,
+        execute: function (sprite, context, time) {
+            if (this.lastMove !== 0) {
+                sprite.left -= sprite.velocityX * ((time - this.lastMove) / 1000); 
+
+                if (sprite.left < 0) {
+                    sprite.left = canvas.width;
+                }
+            }
+            this.lastMove = time;
+        }
+    }
+
+    function init(){
+        let runnerCells = [
+            { left: 0,   top: 0, width: 47, height: 64 },
+            { left: 55,  top: 0, width: 44, height: 64 },
+            { left: 107, top: 0, width: 39, height: 64 },
+            { left: 152, top: 0, width: 46, height: 64 },
+            { left: 208, top: 0, width: 49, height: 64 },
+            { left: 265, top: 0, width: 46, height: 64 },
+            { left: 320, top: 0, width: 42, height: 64 },
+            { left: 380, top: 0, width: 35, height: 64 },
+            { left: 425, top: 0, width: 35, height: 64 },
+        ];
+
+        
+        image.src = "running-sprite-sheet.png"
+        image.onload = function(){
+            context.drawImage(image, 0, 0);
+            sprite= new Sprite('runner', new SpriteSheetPainter(runnerCells,image),[runInPlace,moveLeftToRight]);
+            sprite.left = 200;
+            sprite.top = 100;
+            sprite.velocityX = 50;  // pixels/second
+        }
+    }
+  
+   
+    let button = document.getElementById('button')
+    button.onclick = function(){
+        requestAnimationFrame(animation)
+    }
+
+    function animation (time){   
+        context.clearRect(0,0,canvas.width,canvas.height);
+        context.drawImage(image, 0, 0);
+        sprite.update(context, time);
+        sprite.paint(context)
+        requestAnimationFrame(animation)
+    }
+
+
+   
+</script>
+</html>

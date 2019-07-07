@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvasSounrce" style="border: 1px solid red"></canvas>
+    <canvas id="canvasScale" style="border: 1px solid red;margin-right: 10px"></canvas>
+
+    <script>
+
+        let startX = 0,endX = 0;
+        let startY = 0,endY = 0;
+        let isDown = false,isMove = false;
+        let canvasImgData = null;
+        let scaleImageData = null;
+
+        let canvasScale = document.getElementById('canvasScale');
+        let canvasSource = document.getElementById('canvasSounrce')
+        canvasScale.width = canvasScale.height = 500;
+        canvasSource.width = canvasSource.height = 500;
+
+        
+
+        contextScale = canvasScale.getContext('2d');
+        contextSource = canvasSounrce.getContext('2d');
+        let canvasImgDataCopy =contextSource.createImageData(canvasSource.width, canvasSource.height)
+
+        let img = new Image()
+        img.src = "pic1.jpg";
+        img.onload = function(){
+            contextSource.drawImage(img,0,0);
+            drawArea()
+        }
+        function drawArea(){
+            canvasSource.addEventListener('mousedown',(event)=>{
+                canvasMouseDown(contextSource,event)
+            }) 
+            canvasSource.addEventListener('mousemove',(event)=>{
+                canvasMouseMove(contextSource,event)
+            }) 
+            canvasSource.addEventListener('mouseup',(event)=>{
+                drawLineOver(contextSource,event)
+            }) 
+            canvasSource.addEventListener('mouseleave',(event)=>{
+                drawLineOver(contextSource,event)
+            })
+        }
+        function canvasMouseDown (ctx,event){
+            startX = event.offsetX;
+            startY = event.offsetY
+            isDown = true;
+            contextSource.drawImage(img,0,0);
+            canvasImgData = ctx.getImageData(0,0,canvasSource.width,canvasSource.height);
+            copyCanvasPixels()
+        }
+        function copyCanvasPixels() {
+            console.log(canvasImgData.data.length)
+            console.log(new Date().getTime())
+            var i=0;
+            
+            for (i=0; i < 3; i++) {
+                canvasImgDataCopy.data[i] = canvasImgData.data[i];
+            }
+            canvasImgDataCopy.data[0] = canvasImgData.data[0] / 2
+
+
+            for (i=3; i < canvasImgData.data.length - 4; i+=4) {
+                canvasImgDataCopy.data[i]   = canvasImgData.data[i] / 2; // Alpha: more transparent
+                canvasImgDataCopy.data[i+1] = canvasImgData.data[i+1]; // Red
+                canvasImgDataCopy.data[i+2] = canvasImgData.data[i+2]; // Green
+                canvasImgDataCopy.data[i+3] = canvasImgData.data[i+3]; // Blue
+            }
+            console.log(canvasImgDataCopy)
+            console.log(new Date().getTime())
+        }
+        function canvasMouseMove (ctx,event){
+            if(!isDown){
+                return
+            }
+            isMove = true;
+            endX = event.offsetX;
+            endY = event.offsetY;
+            ctx.putImageData(canvasImgData,0,0);
+            ctx.putImageData(canvasImgDataCopy,0,0,startX,startY,endX-startX,endY-startY);
+            ctx.beginPath();
+            ctx.strokeRect(startX,startY,endX-startX,endY-startY)  
+        }
+        function drawLineOver(ctx,event){
+            if(!isMove){
+                isMove = false;
+                isDown = false;
+                return;
+            }
+            ctx.putImageData(canvasImgData,0,0);
+            if(!(startX == endY && startY == endY)){
+                ctx.beginPath();
+                ctx.strokeRect(startX,startY,endX-startX,endY-startY);
+                scaleImageData = ctx.getImageData(startX,startY,endX-startX,endY-startY)
+                scaleImage()
+            }
+            isMove = false;
+            isDown = false;
+        }
+        function scaleImage(){
+            if(scaleImageData){
+                contextScale.clearRect(0,0,500,500)
+                contextScale.drawImage(canvasSource,startX,startY,endX-startX,endY-startY,0,0,500,500)
+            }
+        }   
+    </script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    .content{
+        width: 400px;
+        height: 300px;
+        overflow: hidden;
+        position: relative
+    }
+
+    #table-content{
+        width: 100%;
+        height: 100%;
+        overflow:auto
+    }
+    #table-oper{
+        width: 102px;
+        height: 100%;
+        position: absolute;
+        right: 0px;
+        top: 0;
+        background: #fff;
+        overflow: auto;
+    }
+    #table-oper table{
+        width: 100%
+    }
+    #table-content td{
+        padding: 0 10px
+    }
+    table{
+        border: 1px solid #ccc;
+        border-left: none;
+        border-bottom: none;
+        min-width: 100%;
+    }
+    table td{
+        border-left: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+        height: 50px;
+        overflow: hidden;
+        text-align: center
+    }
+
+    td.oper{
+        padding: 0px !important;
+        width: 100px;
+        min-width: 100px;
+        max-width: 100px;
+    }
+</style>
+<body>
+    <div class="content">
+        <div id="table-content">
+            <table cellspacing="0" cellpadding="0">
+                <thead>
+                    <tr>
+                        <td>name</td>
+                        <td>age</td>
+                        <td>address</td>
+                        <td>photo</td>
+                        <td>email</td>
+                        <td class="oper">oper</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>feiage.aa</td><td>22</td><td>beijign changping</td><td>18602351793</td>
+                        <td>1198749116@qq.com</td><td class="oper"></td>
+                    </tr>
+                    <tr>
+                        <td>feiage.aa</td><td>22</td><td>beijign changping</td><td>18602351793</td>
+                        <td>1198749116@qq.com</td><td class="oper"></td>
+                    </tr>
+                    <tr>
+                        <td>feiage.aa</td><td>22</td><td>beijign changping</td><td>18602351793</td>
+                        <td>1198749116@qq.com</td><td class="oper"></td>
+                    </tr>
+                    <tr>
+                        <td>feiage.aa</td><td>22</td><td>beijign changping</td><td>18602351793</td>
+                        <td>1198749116@qq.com</td><td class="oper"></td>
+                    </tr>
+                    <tr>
+                        <td>feiage.aa</td><td>22</td><td>beijign changping</td><td>18602351793</td>
+                        <td>1198749116@qq.com</td><td class="oper"></td>
+                    </tr>
+                    <tr>
+                        <td>feiage.aa</td><td>22</td><td>beijign changping</td><td>18602351793</td>
+                        <td>1198749116@qq.com</td><td class="oper"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="table-oper">
+            <table cellspacing="0" cellpadding="0">
+                <thead>
+                    <tr>
+                        <td>oper</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="oper">操作</td></tr>
+                    <tr><td class="oper">操作</td></tr>
+                    <tr><td class="oper">操作</td></tr>
+                    <tr><td class="oper">操作</td></tr>
+                    <tr><td class="oper">操作</td></tr>
+                    <tr><td class="oper">操作</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+<script>   
+
+    let currentTab = 0
+    let tabBodyScroll = ( event) => {
+        if (currentTab == 2) {
+            return;
+        }
+        if (currentTab == 0) {
+            currentTab = 1;
+        }
+        const fixeDom = event.target.nextElementSibling;
+        fixeDom.scrollTop = event.target.scrollTop;
+    }
+
+    let tabOperScroll = (event) => {
+        if (currentTab == 1) {
+            return;
+        }
+        if (currentTab == 0) {
+            currentTab = 2;
+        }
+        const tableContent = event.target.previousElementSibling;
+        tableContent.scrollTop = event.target.scrollTop;
+    }
+    let tabBodyMove =(event)=>{
+        currentTab = 1;
+    }
+    let tabOperMove=(event)=>{
+        currentTab = 2;
+    }
+    
+    let oper=document.getElementById('table-oper')
+    let content=document.getElementById('table-content')
+    oper.addEventListener('scroll',tabOperScroll)
+    content.addEventListener('scroll',tabBodyScroll)
+    oper.addEventListener('mousemove',tabOperMove)
+    content.addEventListener('mousemove',tabBodyMove)
+
+</script>
+</html>

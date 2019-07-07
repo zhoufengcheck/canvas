@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id='controls'>
+        <output id='scaleOutput'>1.0</output>
+        <input id='scaleSlider' type='range'
+            min='1' max='3.0' step='0.01' value='1.0'/> 
+    </div>
+    <canvas id="canvas" style="border: 1px solid red"></canvas>
+</body>
+<script>
+    let canvas = document.getElementById('canvas');
+    let context = canvas.getContext('2d');
+
+    let canvas1 = document.createElement('canvas');
+    canvas1.width = 800;
+    canvas1.height = 600
+    let context1 = canvas1.getContext('2d');
+    let scale = 1;
+    canvas.width = 800;
+    canvas.height = 600;
+    let img = new Image()
+ 
+    img.src = "waterfall.png";
+    img.onload = function(){
+        drawImage(context1)
+        drawWatermark(context1)
+        repaint()
+    }
+    
+
+    window.onload = function(){
+        let scaleSlider = document.getElementById('scaleSlider');
+        scaleSlider.onchange = function(event){
+            scale = event.target.value;
+            document.getElementById('scaleOutput').innerHTML = scale
+            drawImage(context1);
+            drawWatermark(context1);
+            repaint()
+        }
+    }
+
+    function repaint(){
+        let centerX = canvas.width/2;
+        let centerY = canvas.height/2;
+        let centerImgX = canvas.width/2 * scale;
+        let centerImgY = canvas.height/2 * scale;
+
+        let beginX = centerX-centerImgX;
+        let endX = canvas.width*scale;
+        let beginY = centerY-centerImgY;
+        let endY = canvas.height*scale;
+        context.clearRect(0,0,canvas.width,canvas.height);
+  
+        context.drawImage(canvas1,beginX,beginY,endX,endY)
+        
+    }
+
+    function drawImage(context){
+        let centerX = canvas1.width/2;
+        let centerY = canvas1.height/2;
+        let centerImgX = img.width/2 ;
+        let centerImgY = img.height/2 ;
+
+        let beginX = centerX-centerImgX;
+        let endX = img.width;
+        let beginY = centerY-centerImgY;
+        let endY = img.height;
+        context.clearRect(0,0,canvas1.width,canvas1.height);
+        context.drawImage(img,beginX,beginY,endX,endY)
+    }
+
+    function drawWatermark(context) {
+        var lineOne = 'Copyright',
+            lineTwo = 'Acme Inc.',
+            textMetrics = null,
+            FONT_HEIGHT = 128;
+
+        context.save();
+        context.font = FONT_HEIGHT + 'px Arial';
+
+        textMetrics = context.measureText(lineOne);
+
+        context.globalAlpha = 0.6;
+        context.translate(canvas1.width/2,
+                            canvas1.height/2-FONT_HEIGHT/2);
+
+        context.fillText(lineOne, -textMetrics.width/2, 0);
+        context.strokeText(lineOne, -textMetrics.width/2, 0);
+
+        textMetrics = context.measureText(lineTwo);
+        context.fillText(lineTwo, -textMetrics.width/2, FONT_HEIGHT);
+        context.strokeText(lineTwo, -textMetrics.width/2, FONT_HEIGHT);
+        context.restore();
+    }
+</script>
+</html>
